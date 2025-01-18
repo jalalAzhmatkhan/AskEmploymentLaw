@@ -1,0 +1,79 @@
+from dotenv import load_dotenv
+from pydantic import PostgresDsn, field_validator
+from pydantic_settings import BaseSettings
+from typing import Any, Dict, Literal, Optional
+
+class Settings(BaseSettings):
+    """
+    A class to Declare and use Configurations in this App
+    """
+
+    def __init__(self):
+        """
+        Load .env file on initialize this config class
+        """
+        load_dotenv()
+
+    # Database config
+    DATABASE_HOST: str
+    DATABASE_PORT: str
+    DATABASE_SCHEMA: Optional[str] = "public"
+    DATABASE_USE_CREDENTIALS: Optional[bool] = True
+    DATABASE_USERNAME: Optional[str] = None
+    DATABASE_PASSWORD: Optional[str] = None
+    DATABASE_DEFAULT_DB: Optional[str] = "postgres"
+    DATABASE_ENGINE: Literal['postgresql', 'starrocks'] = 'postgresql'
+    DATABASE_CONNECTION_MAX_TRIES: int
+    DATABASE_CONNECTION_WAIT_SEC: int
+    DATABASE_FULL_URI: Optional[PostgresDsn] = None
+
+    @field_validator("DATABASE_FULL_URI")
+    def assemble_db_uri(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+        """
+        Function to Assemble DB connection string URI
+        """
+        if isinstance(v, str):
+            return v
+        if values.get("DATABASE_USE_CREDENTIALS"):
+            return PostgresDsn.build(
+                scheme=values.get("DATABASE_SCHEMA"),
+                username=values.get("DATABASE_USERNAME"),
+                password=values.get("DATABASE_PASSWORD"),
+                host=values.get("DATABASE_HOST"),
+                port=values.get("DATABASE_PORT"),
+                path=f"/{values.get('DATABASE_DEFAULT_DB') or ''}",
+            )
+        else:
+            return PostgresDsn.build(
+                scheme=values.get("DATABASE_SCHEMA"),
+                username=values.get("DATABASE_USERNAME"),
+                password="",
+                host=values.get("DATABASE_HOST"),
+                port=values.get("DATABASE_PORT"),
+                path=f"/{values.get('DATABASE_DEFAULT_DB') or ''}",
+            )
+
+    # Logging Directory
+    LOG_DIR: str
+
+    # RabbitMQ config
+    RABBITMQ_HOST: str
+    RABBITMQ_PORT: str
+    RABBITMQ_USE_CREDENTIALS: bool
+    RABBITMQ_USERNAME: str
+    RABBITMQ_PASSWORD: str
+    RABBITMQ_CONNECTION_MAX_TRIES: int
+    RABBITMQ_WAIT_SECONDS: int
+
+    # Vector Database config
+    VECTOR_DB_HOST: str
+    VECTOR_DB_PORT: str
+    VECTOR_DB_COLLECTION: Optional[str] = None
+    VECTOR_DB_USE_CREDENTIALS: Optional[bool] = False
+    VECTOR_DB_USERNAME: Optional[str] = None
+    VECTOR_DB_PASSWORD: Optional[str] = None
+    VECTOR_DB_ENGINE: Literal['milvus'] = 'milvus'
+    VECTOR_DB_CONNECTION_MAX_TRIES: int
+    VECTOR_DB_CONNECTION_WAIT_SEC: int
+
+settings = Settings()
