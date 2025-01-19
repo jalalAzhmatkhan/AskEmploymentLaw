@@ -19,3 +19,4 @@ class TblDocuments(Base):
     document_type = relationship("TblDocumentType", back_populates="documents")
     user = relationship("TblUsers", back_populates="documents")
     document_metadata = relationship("TblDocumentMetadata", back_populates="documents")
+    file_storage = relationship("TblFileStorage", back_populates="documents")
