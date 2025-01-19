@@ -1,18 +1,20 @@
 from dotenv import load_dotenv
-from pydantic import PostgresDsn, field_validator
+import os
+from pydantic import PostgresDsn, validator
 from pydantic_settings import BaseSettings
 from typing import Any, Dict, Literal, Optional
+
+dotenv_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), ".env")
+print(f"dotenv_path: {dotenv_path}")
+if not os.path.exists(dotenv_path):
+    raise ValueError("No .env file found.")
+
+load_dotenv(dotenv_path)
 
 class Settings(BaseSettings):
     """
     A class to Declare and use Configurations in this App
     """
-
-    def __init__(self):
-        """
-        Load .env file on initialize this config class
-        """
-        load_dotenv()
 
     # Database config
     DATABASE_HOST: str
@@ -27,31 +29,21 @@ class Settings(BaseSettings):
     DATABASE_CONNECTION_WAIT_SEC: int
     DATABASE_FULL_URI: Optional[PostgresDsn] = None
 
-    @field_validator("DATABASE_FULL_URI")
+    @validator("DATABASE_FULL_URI", pre=True)
     def assemble_db_uri(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
         """
         Function to Assemble DB connection string URI
         """
         if isinstance(v, str):
             return v
-        if values.get("DATABASE_USE_CREDENTIALS"):
-            return PostgresDsn.build(
-                scheme=values.get("DATABASE_SCHEMA"),
-                username=values.get("DATABASE_USERNAME"),
-                password=values.get("DATABASE_PASSWORD"),
-                host=values.get("DATABASE_HOST"),
-                port=values.get("DATABASE_PORT"),
-                path=f"/{values.get('DATABASE_DEFAULT_DB') or ''}",
-            )
-        else:
-            return PostgresDsn.build(
-                scheme=values.get("DATABASE_SCHEMA"),
-                username=values.get("DATABASE_USERNAME"),
-                password="",
-                host=values.get("DATABASE_HOST"),
-                port=values.get("DATABASE_PORT"),
-                path=f"/{values.get('DATABASE_DEFAULT_DB') or ''}",
-            )
+        return PostgresDsn.build(
+            scheme=values.get("DATABASE_ENGINE"),
+            username=values.get("DATABASE_USERNAME"),
+            password=values.get("DATABASE_PASSWORD") if values.get("DATABASE_USE_CREDENTIALS") else "",
+            host=values.get("DATABASE_HOST"),
+            port=int(values.get("DATABASE_PORT")),
+            path=values.get('DATABASE_DEFAULT_DB') or '',
+        )
 
     # Logging Directory
     LOG_DIR: str
@@ -75,5 +67,9 @@ class Settings(BaseSettings):
     VECTOR_DB_ENGINE: Literal['milvus'] = 'milvus'
     VECTOR_DB_CONNECTION_MAX_TRIES: int
     VECTOR_DB_CONNECTION_WAIT_SEC: int
+
+    class Config:
+        """ Additional config """
+        case_sensitive = True
 
 settings = Settings()
