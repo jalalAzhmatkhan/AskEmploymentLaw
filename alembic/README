@@ -1,0 +1,11 @@
+# Alembic DB Migration
+Generic single-database configuration.
+
+## How to Upgrade
+Update alembic by doing the following:
+1. After create the model in the models directory, import it db/base.py
+2. Login to the backend container (could be done via Portainer), inside app (not app/app directory, mind you) run:
+    alembic revision --autogenerate -m "write the message here"
+3. It will generate a new version file on app/alembic/versions/ directory.
+4. Restart the backend service so it will automatically call `alembic upgrade head`, or run the following command on the backend container (could be done via Portainer) inside the app folder (not app/alembic/versions/ directory, mind you):
+    alembic upgrade head
