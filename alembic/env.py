@@ -1,5 +1,4 @@
 from logging.config import fileConfig
-import os
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -35,7 +34,6 @@ def get_url()->str:
     :return:
     """
     db_full_uri = settings.DATABASE_FULL_URI
-    print(f"get_url: db_full_uri: {db_full_uri}")
     return str(db_full_uri)
 
 def run_migrations_offline() -> None:

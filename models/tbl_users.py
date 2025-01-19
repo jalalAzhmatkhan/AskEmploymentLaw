@@ -13,3 +13,4 @@ class TblUsers(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=False)
     user_role = relationship("TblUserRole", back_populates="user")
+    documents = relationship("TblDocument", back_populates="user")
