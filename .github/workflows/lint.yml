@@ -37,6 +37,7 @@ jobs:
         echo "Pylint Score: $score"
         if (( $(echo "$score < 7.0" | bc -l) )); then
           echo "Lint score too low! Failing."
+          pylint AskEmploymentLaw
           exit 1
         fi
     - name: Run tests
