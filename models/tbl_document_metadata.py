@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, ForeignKey, Integer, String
+from sqlalchemy import Column, Date, ForeignKey, Integer, JSON, String
 from sqlalchemy.orm import relationship
 
 from models import Base
@@ -28,3 +28,5 @@ class TblDocumentMetadata(Base):
     valid_status = Column(String)
     language = Column(String)
     location = Column(String)
+    changed_by_other_law = Column(JSON)
+    removing_other_law = Column(JSON)

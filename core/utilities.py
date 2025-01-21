@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlparse
 
 def camel_to_snake(camel_case_string: str)->str:
     """
@@ -16,3 +17,12 @@ def camel_to_snake(camel_case_string: str)->str:
     snake_str = re.sub(r'([A-Za-z])(\d)', r'\1_\2', snake_str)
     snake_str = re.sub(r'(\d)([A-Za-z])', r'\1_\2', snake_str)
     return snake_str
+
+def get_base_url(url: str)->str:
+    """
+    Function to get base URL
+    :param url:
+    :return:
+    """
+    parsed_url = urlparse(url)
+    return f"{parsed_url.scheme}://{parsed_url.netloc}"

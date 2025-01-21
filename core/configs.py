@@ -1,8 +1,9 @@
-from dotenv import load_dotenv
 import os
+from typing import Any, Dict, Literal, Optional
+
+from dotenv import load_dotenv
 from pydantic import PostgresDsn, validator
 from pydantic_settings import BaseSettings
-from typing import Any, Dict, Literal, Optional
 
 dotenv_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), ".env")
 print(f"dotenv_path: {dotenv_path}")
@@ -30,7 +31,7 @@ class Settings(BaseSettings):
     DATABASE_FULL_URI: Optional[PostgresDsn] = None
 
     @validator("DATABASE_FULL_URI", pre=True)
-    def assemble_db_uri(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    def assemble_db_uri(self, v: Optional[str], values: Dict[str, Any]) -> Any:
         """
         Function to Assemble DB connection string URI
         """
