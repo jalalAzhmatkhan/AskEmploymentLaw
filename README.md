@@ -1,6 +1,8 @@
 # AskEmploymentLaw
 AskEmploymentLaw is a ChatGPT like application for employment law QnA. Currently for Indonesian.
 
+[![AskEmploymentLaw Testing](https://github.com/jalalAzhmatkhan/AskEmploymentLaw/actions/workflows/lint.yml/badge.svg)](https://github.com/jalalAzhmatkhan/AskEmploymentLaw/actions/workflows/lint.yml)
+
 ## How to Run
 ### Without Docker
 1. Please use Python 3.10.
