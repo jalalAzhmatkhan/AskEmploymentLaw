@@ -5,10 +5,17 @@ fastapi==0.115.6
 huggingface==0.0.1
 huggingface-hub==0.27.1
 langchain==0.3.14
+langchain-community==0.3.14
+langchain-milvus==0.1.8
+langchain-ollama==0.2.2
+langchain-openai==0.3.0
+langchain-text-splitters==0.3.5
+langgraph==0.2.64
 matplotlib==3.10.0
 neo4j==5.27.0
 nltk==3.9.1
 numpy==2.2.1
+ollama==0.4.6
 optuna==4.1.0
 pandas==2.2.3
 pika==1.3.2
@@ -17,6 +24,7 @@ psycopg2==2.9.10
 pydantic==2.10.5
 pydantic-settings==2.7.1
 pymilvus==2.5.3
+pypdf==5.1.0
 pytesseract==0.3.13
 pytest==8.3.4
 pytest-cov==6.0.0
@@ -25,3 +33,6 @@ sqlalchemy==2.0.37
 streamlit==1.41.1
 transformers==4.48.0
 wandb==0.19.4
+python-dotenv==1.0.1
+tenacity==9.0.0
+typing_extensions==4.12.2
