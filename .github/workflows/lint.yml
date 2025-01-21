@@ -1,0 +1,45 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: AskEmploymentLaw Lint Pipeline
+
+on:
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: PROD_DASK_SERVER
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest pylint pytest-cov
+    - name: Lint with Pylint
+      run: |
+        # Check Pylintrc file
+        if [ ! -f ".pylintrc" ]; then
+            echo "Pylintrc file not found. Creating one..."
+            pylint --generate-rcfile > .pylintrc
+        fi
+
+        # Run Pylint with Minimum Score 7.0
+        score=$(pylint AskEmploymentLaw --exit-zero | grep "Your code has been rated at" | awk '{print $7}' | cut -d/ -f1)
+        echo "Pylint Score: $score"
+        if (( $(echo "$score < 7.0" | bc -l) )); then
+          echo "Lint score too low! Failing."
+          exit 1
+        fi
+    - name: Run tests
+      run: |
+        pytest --maxfail=1

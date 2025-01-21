@@ -40,7 +40,6 @@ def init_rabbitmq_connection() -> bool:
         else:
             logger.info(f"init_rabbitmq_connection: [ReqId: {str(uuid4())}] Connecting to RabbitMQ without using Credentials.")
             connection = pika.BlockingConnection(pika.ConnectionParameters(rabbitmq_host, rabbitmq_port, heartbeat=60))
-        channel = connection.channel()
 
         logger.info(f"init_rabbitmq_connection: [ReqId: {str(uuid4())}] RabbitMQ Connection is Online.")
         response = True

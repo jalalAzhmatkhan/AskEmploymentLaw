@@ -1,6 +1,7 @@
 from datetime import date
-from pydantic import BaseModel
 from typing import List, Optional
+
+from pydantic import BaseModel
 
 from schemas.pdf_scraper.scraped_law_status_schema import ScrapedLawStatusSchema
 

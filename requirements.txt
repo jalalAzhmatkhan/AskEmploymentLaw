@@ -23,6 +23,7 @@ playwright==1.49.1
 psycopg2==2.9.10
 pydantic==2.10.5
 pydantic-settings==2.7.1
+pylint==3.3.3
 pymilvus==2.5.3
 pypdf==5.1.0
 pytesseract==0.3.13
