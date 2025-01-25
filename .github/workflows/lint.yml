@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  linting:
     runs-on: ubuntu-latest
 
     steps:
@@ -23,7 +23,6 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install flake8 pytest pylint pytest-cov
     - name: Lint with Pylint
       run: |
         # Check Pylintrc file
