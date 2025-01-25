@@ -1,0 +1,13 @@
+# Document Type
+IN_PRES = "Instruksi Presiden"
+KEP_PRES = "Keputusan Presiden"
+PBL = "Peraturan Badan/Lembaga"
+PEN_PRES = "Penetapan Presiden"
+PER_DA = "Peraturan Daerah"
+PER_MEN = "Peraturan Menteri"
+PER_PRES = "Peraturan Presiden"
+PPPUU = "Peraturan Pemerintah Pengganti Undang-Undang"
+PP = "Peraturan Pemerintah"
+TAP_MPR = "Ketetapan Majelis Permusyawaratan Rakyat"
+UU = "Undang-Undang"
+UU_DARURAT = "Undang-Undang Darurat"
