@@ -30,6 +30,7 @@ pypdf==5.1.0
 pytesseract==0.3.13
 pytest==8.3.4
 pytest-cov==6.0.0
+pytest-metadata==3.1.0
 scikit-learn==1.6.1
 sqlalchemy==2.0.37
 streamlit==1.41.1
