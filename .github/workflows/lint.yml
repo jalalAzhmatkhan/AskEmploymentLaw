@@ -32,7 +32,7 @@ jobs:
         fi
 
         # Run Pylint with Minimum Score 7.0
-        pip install -r requirements.txt --quiet
+        pip install --force-reinstall --no-deps -r requirements.txt --quiet
         score=$(pylint AskEmploymentLaw --exit-zero | grep "Your code has been rated at" | awk '{print $7}' | cut -d/ -f1)
         echo "Pylint Score: $score"
         if (( $(echo "$score < 7.0" | bc -l) )); then
