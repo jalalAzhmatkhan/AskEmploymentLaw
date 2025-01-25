@@ -43,5 +43,5 @@ jobs:
         fi
     - name: Run tests
       run: |
-        pip install --upgrade pytest-metadata
+        pip install --upgrade pytest-cov pytest-metadata
         pytest --maxfail=1
