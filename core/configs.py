@@ -2,8 +2,7 @@ import os
 from typing import Any, Dict, Literal, Optional
 
 from dotenv import load_dotenv
-from pydantic import PostgresDsn, validator
-from pydantic_settings import BaseSettings
+from pydantic import BaseSettings, validator
 
 dotenv_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), ".env")
 print(f"dotenv_path: {dotenv_path}")
@@ -28,23 +27,26 @@ class Settings(BaseSettings):
     DATABASE_ENGINE: Literal['postgresql', 'starrocks'] = 'postgresql'
     DATABASE_CONNECTION_MAX_TRIES: int
     DATABASE_CONNECTION_WAIT_SEC: int
-    DATABASE_FULL_URI: Optional[PostgresDsn] = None
+    DATABASE_FULL_URI: Optional[str] = None
 
     @validator("DATABASE_FULL_URI", pre=True)
-    def assemble_db_uri(self, v: Optional[str], values: Dict[str, Any]) -> Any:
+    def assemble_db_uri(cls, v: Optional[str], values: Dict[str, Any]) -> str:
         """
         Function to Assemble DB connection string URI
         """
         if isinstance(v, str):
             return v
-        return PostgresDsn.build(
-            scheme=values.get("DATABASE_ENGINE"),
-            username=values.get("DATABASE_USERNAME"),
-            password=values.get("DATABASE_PASSWORD") if values.get("DATABASE_USE_CREDENTIALS") else "",
-            host=values.get("DATABASE_HOST"),
-            port=int(values.get("DATABASE_PORT")),
-            path=values.get('DATABASE_DEFAULT_DB') or '',
+
+        return (f'{values.get("DATABASE_ENGINE")}://{values.get("DATABASE_USERNAME")}:'
+                f'{values.get("DATABASE_PASSWORD") if values.get("DATABASE_USE_CREDENTIALS") else ""}@'
+                f'{values.get("DATABASE_HOST")}:{values.get("DATABASE_PORT")}/'
+                f'{values.get("DATABASE_DEFAULT_DB") or ""}'
         )
+
+    # SuperAdmin config
+    FIRST_SUPERADMIN_EMAIL: str
+    FIRST_SUPERADMIN_NAME: str
+    FIRST_SUPERADMIN_PASSWORD: str
 
     # Logging Directory
     LOG_DIR: str
