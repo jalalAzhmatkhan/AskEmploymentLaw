@@ -13,4 +13,7 @@ class RolesInDBSchema(RolesSchema):
     id: int
 
     class Config:
+        """
+        Configuration for the ORM mode
+        """
         orm_mode = True

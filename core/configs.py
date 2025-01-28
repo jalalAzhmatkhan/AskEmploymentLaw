@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     """
     A class to Declare and use Configurations in this App
     """
+    # App Config
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
+    AUTHENTICATION_URI: str = "/api/v1/auth/login"
+    SECRET_KEY: str = None
 
     # Database config
     DATABASE_HOST: str
