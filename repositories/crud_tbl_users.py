@@ -1,3 +1,4 @@
+import json
 from typing import List, Optional
 
 from sqlalchemy.orm import Session
@@ -43,7 +44,7 @@ class CRUDTblUsers:
         :param obj_in:
         :return:
         """
-        db_obj_data = obj_in.model_dump()
+        db_obj_data = json.loads(obj_in.json())
         db_obj = TblUsers(**db_obj_data) # type: ignore
         db.add(db_obj)
         db.commit()
@@ -58,7 +59,7 @@ class CRUDTblUsers:
         :param obj_in:
         :return:
         """
-        obj_data = obj_in.model_dump()
+        obj_data = json.loads(obj_in.json())
         for key, value in obj_data.items():
             setattr(db_obj, key, value)
         db.commit()
@@ -72,7 +73,7 @@ class CRUDTblUsers:
         :param id:
         :return:
         """
-        db.query(TblUsers).filter(TblUsers.id == id).delete()
+        db.query(TblUsers).filter(TblUsers.id == id).delete() # type: ignore
         db.commit()
         return True
 

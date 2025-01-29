@@ -1,3 +1,5 @@
+from typing import Generator
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -8,10 +10,10 @@ class Database:
     Database class to connect to the database
     """
     def __init__(self):
-        self.engine = create_engine(settings.SQLALCHEMY_DATABASE_URI, pool_pre_ping=True)
+        self.engine = create_engine(settings.DATABASE_FULL_URI, pool_pre_ping=True)
         self.SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=self.engine)
 
-    def get_postgresql_db(self):
+    def get_postgresql_db(self)->Generator:
         """
         Get PostgreSQL database
         :return:

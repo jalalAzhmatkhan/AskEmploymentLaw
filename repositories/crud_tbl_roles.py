@@ -1,3 +1,4 @@
+import json
 from typing import List, Optional
 
 from sqlalchemy.orm import Session
@@ -43,11 +44,25 @@ class CRUDTblRoles:
         :param obj_in:
         :return:
         """
-        db_obj_data = obj_in.model_dump()
+        db_obj_data = json.loads(obj_in.json())
         db_obj = TblRoles(**db_obj_data) # type: ignore
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+        return db_obj
+
+    def bulk_insert(self, db: Session, obj_in: List[RolesSchema]) -> List[TblRoles]:
+        """
+        Insert new TblRoles
+        :param db:
+        :param obj_in:
+        :return:
+        """
+        db_obj = [TblRoles(**json.loads(db_obj_data.json())) for db_obj_data in obj_in] # type: ignore
+        db.add_all(db_obj)
+        db.commit()
+        for db_obj_data in db_obj:
+            db.refresh(db_obj_data)
         return db_obj
 
     def update(self, db: Session, db_obj: TblRoles, obj_in: RolesSchema) -> TblRoles:
@@ -58,7 +73,7 @@ class CRUDTblRoles:
         :param obj_in:
         :return:
         """
-        db_obj_data = obj_in.model_dump()
+        db_obj_data = json.loads(obj_in.json())
         for key, value in db_obj_data.items():
             setattr(db_obj, key, value)
         db.commit()

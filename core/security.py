@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import json
 from typing import Any, List, Union
 
 from fastapi.security import OAuth2PasswordBearer
@@ -12,14 +13,15 @@ from repositories.crud_tbl_permissions import crud_tbl_permissions
 from schemas.core import security as security_schemas
 
 pwd_context = CryptContext(schemes=[security_constants.BCRYPT_SCHEMA], deprecated="auto")
-all_permissions_dict = crud_tbl_permissions.get_all_name_to_dict(database)
+db = database.SessionLocal()
+all_permissions_dict = crud_tbl_permissions.get_all_name_to_dict(db=db)
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl=settings.AUTHENTICATION_URI,
     scopes=all_permissions_dict,
 )
 
 def create_access_token(
-    role_id: int,
+    role_id: List[int],
     permissions: List[str],
     subject: Union[str, Any],
     expires_delta: timedelta = None
@@ -40,12 +42,12 @@ def create_access_token(
         )
     to_encode = security_schemas.AccessTokenDataSchema(
         exp=expire,
-        role_id=role_id,
+        role_ids=role_id,
         scopes=permissions,
         sub=subject
     )
     encoded_jwt = jwt.encode(
-        to_encode.json(),
+        json.loads(to_encode.json()),
         settings.SECRET_KEY,
         algorithm=security_constants.ENCODING_ALGORITHM
     )

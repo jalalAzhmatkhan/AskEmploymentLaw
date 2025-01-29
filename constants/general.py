@@ -24,6 +24,8 @@ HTTP_STATUS_DETAIL_BAD_REQUEST = "Bad Request"
 HTTP_STATUS_DETAIL_BAD_CREDENTIALS = "Could not validate credentials"
 HTTP_STATUS_DETAIL_FORBIDDEN = "Forbidden Access"
 HTTP_STATUS_DETAIL_INACTIVE_USER = "Inactive User"
+HTTP_STATUS_DETAIL_INCORRECT_USERNAME_PASSWORD = "Incorrect Username or Password"
+HTTP_STATUS_DETAIL_NO_ROLES_FOUND = "No role(s) found for this user. Please assign role(s) to this user first."
 HTTP_STATUS_DETAIL_NOT_FOUND = "Data Not Found"
 
 # API Response Headers

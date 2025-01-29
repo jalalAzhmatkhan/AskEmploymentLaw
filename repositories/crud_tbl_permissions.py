@@ -1,3 +1,4 @@
+import json
 from typing import Dict, List, Optional
 
 from sqlalchemy.orm import Session
@@ -26,6 +27,14 @@ class CRUDTblPermissions:
         :return:
         """
         return db.query(TblPermissions).filter(TblPermissions.permission_name == name).first() # type: ignore
+
+    def get_all(self, db:Session)->List[TblPermissions]:
+        """
+        Get All TblPermissions data
+        :param db:
+        :return:
+        """
+        return db.query(TblPermissions).all() # type: ignore
 
     def get_all_name_to_dict(self, db: Session)->Dict[str, str]:
         """
@@ -57,11 +66,25 @@ class CRUDTblPermissions:
         :param obj_in:
         :return:
         """
-        db_obj_data = obj_in.model_dump()
+        db_obj_data = json.loads(obj_in.json())
         db_obj = TblPermissions(**db_obj_data) # type: ignore
         db.add(db_obj)
         db.commit()
         db.refresh(db_obj)
+        return db_obj
+
+    def bulk_insert(self, db: Session, obj_in: List[PermissionsSchema]) -> List[TblPermissions]:
+        """
+        Insert new TblPermissions
+        :param db:
+        :param obj_in:
+        :return:
+        """
+        db_obj = [TblPermissions(**json.loads(db_obj_data.json())) for db_obj_data in obj_in] # type: ignore
+        db.add_all(db_obj)
+        db.commit()
+        for db_obj_data in db_obj:
+            db.refresh(db_obj_data)
         return db_obj
 
     def update(self, db: Session, db_obj: TblPermissions, obj_in: PermissionsUpdateSchema) -> TblPermissions:
@@ -72,7 +95,7 @@ class CRUDTblPermissions:
         :param obj_in:
         :return:
         """
-        db_obj_data = obj_in.model_dump()
+        db_obj_data = json.loads(obj_in.json())
         for key, value in db_obj_data.items():
             setattr(db_obj, key, value)
         db.commit()

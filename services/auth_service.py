@@ -23,7 +23,7 @@ def authenticate_user(db: Session, username: str, password: str)->Union[Optional
     :param password:
     :return:
     """
-    user = crud_tbl_users.user.get_by_email(db, email=username)
+    user = crud_tbl_users.get_by_email(db, email=username)
     if not user:
         return False
     if not verify_password(password, user.hashed_password):
@@ -66,7 +66,7 @@ async def get_current_user(
     except (InvalidTokenError, ValidationError) as exc:
         raise credentials_exception from exc
 
-    user = crud_tbl_users.user.get_by_email(db, email=username)
+    user = crud_tbl_users.get_by_email(db, email=username)
     if user is None:
         raise credentials_exception
     for scope in security_scopes.scopes:
@@ -81,7 +81,7 @@ async def get_current_user(
 async def get_current_active_user(
     current_user: Annotated[
         TblUsers,
-        Security(get_current_user, scopes=[security_constants.PERMISSION_ME])
+        Security(get_current_user, scopes=[security_constants.PERMISSION_READ_ME])
     ]
 )->Optional[TblUsers]:
     """

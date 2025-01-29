@@ -9,5 +9,5 @@ class AccessTokenDataSchema(BaseModel):
     """
     exp: datetime
     sub: str
-    role_id: int
+    role_ids: List[int]
     scopes: List[str] = []
