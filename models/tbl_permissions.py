@@ -10,4 +10,4 @@ class TblPermissions(Base):
     id = Column(Integer, primary_key=True, index=True)
     permission_name = Column(String, index=True, nullable=False)
     permission_description = Column(String, nullable=True)
-    role_permissions = relationship("TblRolePermissions", "permissions")
+    role_permissions = relationship("TblRolePermissions", back_populates="permissions")
