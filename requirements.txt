@@ -34,6 +34,7 @@ pytest==8.3.4
 pytest-cov==6.0.0
 pytest-metadata==3.1.0
 python-jose==3.3.0
+python-multipart==0.0.20
 scikit-learn==1.6.1
 sqlalchemy==2.0.37
 streamlit==1.41.1
