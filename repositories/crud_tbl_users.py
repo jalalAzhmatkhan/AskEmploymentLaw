@@ -4,7 +4,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from models import TblUsers
-from schemas import UsersSchema
+from schemas import UsersSchema, UserUpdateSchema
 
 class CRUDTblUsers:
     """
@@ -51,7 +51,7 @@ class CRUDTblUsers:
         db.refresh(db_obj)
         return db_obj
 
-    def update(self, db: Session, db_obj: TblUsers, obj_in: UsersSchema) -> TblUsers:
+    def update(self, db: Session, db_obj: TblUsers, obj_in: UserUpdateSchema) -> TblUsers:
         """
         Update TblUsers
         :param db:

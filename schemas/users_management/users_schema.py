@@ -1,13 +1,13 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class UsersSchema(BaseModel):
     """
     Schema for Tbl_Users
     """
     full_name: str
-    email: str
-    hashed_password: Optional[str] = None
+    email: EmailStr
+    hashed_password: str
     is_active: Optional[bool] = False
 
 class UserInDBSchema(UsersSchema):

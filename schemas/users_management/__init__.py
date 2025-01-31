@@ -18,4 +18,4 @@ from schemas.users_management.userrole_schema import (
     UserRoleNameSchema,
     UserRolesPermissionsSchema,
 )
-from schemas.users_management.users_schema import UsersSchema, UserInDBSchema
+from schemas.users_management.users_schema import UsersSchema, UserInDBSchema, UserUpdateSchema
