@@ -17,6 +17,9 @@ class UserInDBSchema(UsersSchema):
     id: int
 
     class Config:
+        """
+        Configuration for the ORM mode
+        """
         orm_mode = True
 
 class UserUpdateSchema(UsersSchema):

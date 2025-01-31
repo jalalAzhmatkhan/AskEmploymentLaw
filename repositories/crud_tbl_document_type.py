@@ -1,3 +1,4 @@
+import json
 from typing import List, Optional
 
 from sqlalchemy.orm import Session
@@ -36,6 +37,14 @@ class CRUDTblDocumentType:
         """
         return db.query(TblDocumentType).filter(TblDocumentType.document_type.like(f"%{name}%")).all() # type: ignore
 
+    def get_all(self, db: Session)->List[TblDocumentType]:
+        """
+        Get all TblDocumentType data
+        :param db:
+        :return:
+        """
+        return db.query(TblDocumentType).all() # type: ignore
+
     def insert(self, db: Session, obj_in: DocumentTypeSchema) -> TblDocumentType:
         """
         Insert new TblDocumentType
@@ -43,7 +52,7 @@ class CRUDTblDocumentType:
         :param obj_in:
         :return:
         """
-        db_obj_data = obj_in.model_dump()
+        db_obj_data = json.loads(obj_in.json())
         db_obj = TblDocumentType(**db_obj_data) # type: ignore
         db.add(db_obj)
         db.commit()
@@ -58,7 +67,7 @@ class CRUDTblDocumentType:
         :param obj_in:
         :return:
         """
-        db_obj_data = obj_in.model_dump()
+        db_obj_data = json.loads(obj_in.json())
         for field in db_obj_data:
             setattr(db_obj, field, db_obj_data[field])
         db.add(db_obj)
