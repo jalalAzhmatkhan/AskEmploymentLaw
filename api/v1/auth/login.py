@@ -16,7 +16,7 @@ from services import auth_service
 
 login_controller = APIRouter()
 
-@login_controller.post("/login")
+@login_controller.post("/login", response_model=responses.LoginResponse)
 def login(
     db: Session = Depends(database.get_postgresql_db),
     form_data: OAuth2PasswordRequestForm = Depends()

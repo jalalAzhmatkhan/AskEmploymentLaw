@@ -59,6 +59,9 @@ class Settings(BaseSettings):
                 f'{values.get("DATABASE_DEFAULT_DB") or ""}'
         )
 
+    # Email config
+    ENABLE_SEND_EMAIL: bool = False
+
     # SuperAdmin config
     FIRST_SUPERADMIN_EMAIL: str
     FIRST_SUPERADMIN_NAME: str

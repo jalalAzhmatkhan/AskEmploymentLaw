@@ -27,6 +27,9 @@ HTTP_STATUS_DETAIL_INACTIVE_USER = "Inactive User"
 HTTP_STATUS_DETAIL_INCORRECT_USERNAME_PASSWORD = "Incorrect Username or Password"
 HTTP_STATUS_DETAIL_NO_ROLES_FOUND = "No role(s) found for this user. Please assign role(s) to this user first."
 HTTP_STATUS_DETAIL_NOT_FOUND = "Data Not Found"
+HTTP_STATUS_DETAIL_NOT_ENOUGH_PRIVILEGES = "The current user does not have enough privileges."
+HTTP_STATUS_DETAIL_USER_ALREADY_DELETED = "The associated user has already been deleted."
+HTTP_STATUS_DETAIL_USER_ALREADY_EXISTS = "User with this email already exists."
 
 # API Response Headers
 HEADERS_WWW_AUTHENTICATE = "WWW-Authenticate"
