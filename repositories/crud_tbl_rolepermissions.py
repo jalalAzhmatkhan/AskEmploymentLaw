@@ -31,9 +31,26 @@ class CRUDTblRolePermissions:
         return (db.query(TblRolePermissions).distinct()
                 .filter(TblRolePermissions.role_id == role_id).all()) # type: ignore
 
-    def get_permissions_by_role_ids(self, db: Session, role_ids: List[int])->List[RolePermissionsScreenSchema]:
+    def get_by_role_ids(self, db: Session, role_id: List[int])->List[TblRolePermissions]:
+        """
+        Get TblRolePermissions by role_id
+        :param db:
+        :param role_id:
+        :return:
+        """
+        return (db.query(TblRolePermissions).distinct()  # type: ignore
+                .filter(
+                TblRolePermissions.role_id.in_(role_id),  # type: ignore
+        ).all())  # type: ignore
+
+    def get_permissions_by_role_ids(
+        self,
+        db: Session,
+        role_ids: List[int],
+    )->List[RolePermissionsScreenSchema]:
         """
         Get Permission Names by many Role ID
+        :param db:
         :param role_ids:
         :return:
         """
@@ -52,6 +69,7 @@ class CRUDTblRolePermissions:
                 role_name=found_role.role_name if found_role else "",
                 permission_names=permissions
             )
+            responses.append(response)
         return responses
 
     def get_by_permission_id(self, db: Session, permission_id: int)->List[TblRolePermissions]:
@@ -61,9 +79,25 @@ class CRUDTblRolePermissions:
         :param permission_id:
         :return:
         """
-        return db.query(TblRolePermissions).distinct().filter(TblRolePermissions.permission_id == permission_id).all() # type: ignore
+        return (db.query(TblRolePermissions).distinct()
+                .filter(TblRolePermissions.permission_id == permission_id).all()) # type: ignore
 
-    def get_by_role_permission_id(self, db: Session, role_id: int, permission_id: int)->Optional[TblRolePermissions]:
+    def get_by_permission_ids(self, db: Session, permission_ids: List[int])->List[TblRolePermissions]:
+        """
+        Get TblRolePermissions by many permission_id
+        :param db:
+        :param permission_ids:
+        :return:
+        """
+        return (db.query(TblRolePermissions).distinct().order_by(TblRolePermissions.role_id)  # type: ignore
+                .filter(TblRolePermissions.permission_id.in_(permission_ids)).all())  # type: ignore
+
+    def get_by_role_permission_id(
+        self,
+        db: Session,
+        role_id: int,
+        permission_id: int,
+    )->Optional[TblRolePermissions]:
         """
         Get TblRolePermissions by role_id and permission_id
         :param db:
@@ -74,7 +108,7 @@ class CRUDTblRolePermissions:
         return db.query(TblRolePermissions).filter(
             TblRolePermissions.role_id == role_id,  # type: ignore
             TblRolePermissions.permission_id == permission_id  # type: ignore
-        ).first() # type: ignore
+        ).first()  # type: ignore
 
     def get_all(self, db: Session)->List[TblRolePermissions]:
         """

@@ -103,7 +103,6 @@ async def get_current_active_user(
     :param current_user:
     :return:
     """
-    print("get_current_active_user: Verifying active user...")
     if not current_user.is_active:
         raise HTTPException(
             status_code=general_constants.HTTP_STATUS_ERROR_BAD_REQUEST,
@@ -120,7 +119,6 @@ async def get_current_active_superuser(
     :param current_user:
     :return:
     """
-    print("get_current_active_superuser: Verifying super user...")
     db = database.SessionLocal()
     current_roles = crud_tbl_userroles.get_user_role_name_by_user_id(db=db, user_id=current_user.id)
     if len(current_roles) < 1:
