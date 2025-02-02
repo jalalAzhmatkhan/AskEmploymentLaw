@@ -11,12 +11,19 @@ from constants import general as general_constants
 from constants.core import security as security_constants
 from constants.services import auth as auth_constants
 from core.configs import settings
+from core.db_connection import database
+from core.logger import logger
 from core.security import oauth2_scheme, verify_password
 from models.tbl_users import TblUsers
 from repositories import crud_tbl_users, crud_tbl_userroles
 from schemas.core import security as security_schemas
 
-def authenticate_user(db: Session, username: str, password: str)->Union[Optional[TblUsers], bool]:
+def authenticate_user(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    username: str,
+    password: str
+)->Union[Optional[TblUsers], bool]:
     """
     Function to authenticate the user by the username and password
     :param db:
@@ -32,9 +39,9 @@ def authenticate_user(db: Session, username: str, password: str)->Union[Optional
     return user
 
 async def get_current_user(
-    db: Session,
     security_scopes: SecurityScopes,
-    token: Annotated[str, Depends(oauth2_scheme)]
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(database.get_postgresql_db),
 )->Optional[TblUsers]:
     """
     Function to get the current user
@@ -59,15 +66,24 @@ async def get_current_user(
             settings.SECRET_KEY,
             algorithms=[security_constants.ENCODING_ALGORITHM]
         )
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_scopes = payload.get("scopes", [])
-        token_data = security_schemas.AccessTokenDataSchema(**token_scopes)
+        user_id = payload.get("sub")
+        if user_id is None:
+            raise HTTPException(
+                status_code=general_constants.HTTP_STATUS_ERROR_UNAUTHORIZED,
+                detail=general_constants.HTTP_STATUS_DETAIL_BAD_CREDENTIALS,
+                headers={general_constants.HEADERS_WWW_AUTHENTICATE: authenticate_value }
+            )
+        token_data = security_schemas.AccessTokenDataSchema(
+            exp=payload.get("exp"),
+            sub=user_id,
+            role_ids=payload.get("role_ids"),
+            scopes=payload.get("scopes")
+        )
     except (InvalidTokenError, ValidationError) as exc:
+        logger.error(f"get_current_user: {exc}", exc_info=True)
         raise credentials_exception from exc
 
-    user = crud_tbl_users.get_by_email(db, email=username)
+    user = crud_tbl_users.get_by_id(db, id=user_id)
     if user is None:
         raise credentials_exception
     for scope in security_scopes.scopes:
@@ -80,17 +96,14 @@ async def get_current_user(
     return user
 
 async def get_current_active_user(
-    current_user: Annotated[
-        TblUsers,
-        Security(get_current_user, scopes=[security_constants.PERMISSION_READ_ME])
-    ]
+    current_user: TblUsers = Security(get_current_user, scopes=[security_constants.PERMISSION_READ_ME])
 )->Optional[TblUsers]:
     """
     Function to get the current active user
-    :param db:
     :param current_user:
     :return:
     """
+    print("get_current_active_user: Verifying active user...")
     if not current_user.is_active:
         raise HTTPException(
             status_code=general_constants.HTTP_STATUS_ERROR_BAD_REQUEST,
@@ -99,11 +112,7 @@ async def get_current_active_user(
     return current_user
 
 async def get_current_active_superuser(
-    db: Session,
-    current_user: Annotated[
-        TblUsers,
-        Security(get_current_active_user, scopes=[security_constants.PERMISSION_READ_ME])
-    ]
+    current_user: TblUsers = Depends(get_current_active_user)
 )->Optional[TblUsers]:
     """
     Function to get the current active user
@@ -111,6 +120,8 @@ async def get_current_active_superuser(
     :param current_user:
     :return:
     """
+    print("get_current_active_superuser: Verifying super user...")
+    db = database.SessionLocal()
     current_roles = crud_tbl_userroles.get_user_role_name_by_user_id(db=db, user_id=current_user.id)
     if len(current_roles) < 1:
         raise HTTPException(

@@ -28,9 +28,9 @@ def login(
     :return:
     """
     authenticated_user = auth_service.authenticate_user(
-        db,
-        form_data.username,
-        form_data.password
+        db=db,
+        username=form_data.username,
+        password=form_data.password
     )
     if not authenticated_user:
         raise HTTPException(

@@ -41,7 +41,7 @@ def create_access_token(
             minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
         )
     to_encode = security_schemas.AccessTokenDataSchema(
-        exp=expire,
+        exp=int(expire.timestamp()), # Convert to UNIX timestamp
         role_ids=role_id,
         scopes=permissions,
         sub=subject
