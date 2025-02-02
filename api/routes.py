@@ -2,7 +2,8 @@ from fastapi import APIRouter
 
 from api.v1 import (
     login_controller,
-    user_registration_controller,
+    roles_controller,
+    user_management_controller,
 )
 
 api_router_v1 = APIRouter(prefix="/v1")
@@ -12,7 +13,12 @@ api_router_v1.include_router(
     tags=["auth"]
 )
 api_router_v1.include_router(
-    user_registration_controller,
-    prefix="/users-management",
-    tags=["users-management"]
+    roles_controller,
+    prefix="/roles",
+    tags=["roles"]
+)
+api_router_v1.include_router(
+    user_management_controller,
+    prefix="/users_management",
+    tags=["users_management"]
 )

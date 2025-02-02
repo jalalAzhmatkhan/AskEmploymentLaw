@@ -2,6 +2,7 @@ import json
 from typing import List, Optional
 
 from sqlalchemy.orm import Session
+from sqlalchemy import delete
 
 from models import TblPermissions, TblRolePermissions
 from repositories.crud_tbl_roles import crud_tbl_roles
@@ -126,7 +127,7 @@ class CRUDTblRolePermissions:
         db.refresh(db_obj)
         return db_obj
 
-    def delete(self, db: Session, db_obj: TblRolePermissions):
+    def delete(self, db: Session, db_obj: TblRolePermissions)->TblRolePermissions:
         """
         Delete TblRolePermissions
         :param db:
@@ -136,5 +137,23 @@ class CRUDTblRolePermissions:
         db.delete(db_obj)
         db.commit()
         return db_obj
+
+    def bulk_delete(self, db: Session, db_objs: List[TblRolePermissions])->List[TblRolePermissions]:
+        """
+        Delete rows of TblRolePermissions
+        :param db:
+        :param db_objs:
+        :return:
+        """
+        if not db_objs:
+            return
+        role_permission_ids = [role_permission.id for role_permission in db_objs]
+        db.execute(
+            delete(TblRolePermissions).where(
+                TblRolePermissions.id.in_(role_permission_ids) # type: ignore
+            )
+        )
+        db.commit()
+        return db_objs
 
 crud_tbl_rolepermissions = CRUDTblRolePermissions()
