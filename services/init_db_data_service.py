@@ -176,7 +176,31 @@ class Initialize_Data:
             PermissionsSchema(
                 permission_name=security_constants.PERMISSION_DELETE_DOC_TYPES,
                 permission_description=security_constants.PERMISSION_DELETE_DOC_TYPES_DESC,
-            )
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_READ_ALL_ROLES,
+                permission_description=security_constants.PERMISSION_READ_ALL_ROLES_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_READ_ROLES_ME,
+                permission_description=security_constants.PERMISSION_READ_ROLES_ME_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_READ_ROLES_USER,
+                permission_description=security_constants.PERMISSION_READ_ROLES_USER_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_WRITE_ROLES,
+                permission_description=security_constants.PERMISSION_WRITE_ROLES_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_UPDATE_ROLES,
+                permission_description=security_constants.PERMISSION_UPDATE_ROLES_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_DELETE_ROLES,
+                permission_description=security_constants.PERMISSION_DELETE_ROLES_DESC,
+            ),
         ]
         existing_permissions = crud_tbl_permissions.get_all(self.db)
         existing_permission_names = [

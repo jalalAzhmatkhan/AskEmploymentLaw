@@ -5,7 +5,6 @@ from dotenv import load_dotenv
 from pydantic import AnyHttpUrl, BaseSettings, validator
 
 dotenv_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), ".env")
-print(f"dotenv_path: {dotenv_path}")
 if not os.path.exists(dotenv_path):
     raise ValueError("No .env file found.")
 

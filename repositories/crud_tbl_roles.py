@@ -10,6 +10,14 @@ class CRUDTblRoles:
     """
     CRUD for TblRoles
     """
+    def get_all(self, db: Session)->List[TblRoles]:
+        """
+        Get all data on the table TblRoles
+        :param db:
+        :return:
+        """
+        return db.query(TblRoles).order_by(TblRoles.id).all() # type: ignore
+
     def get_by_id(self, db: Session, id: int)->Optional[TblRoles]:
         """
         Get TblRoles by id
@@ -18,6 +26,16 @@ class CRUDTblRoles:
         :return:
         """
         return db.query(TblRoles).filter(TblRoles.id == id).first() # type: ignore
+
+    def get_by_ids(self, db: Session, ids: List[int])->List[TblRoles]:
+        """
+        Get TblRoles by many ids
+        :param db:
+        :param ids:
+        :return:
+        """
+        return db.query(TblRoles).filter(TblRoles.id.in_(ids), # type: ignore
+        ).order_by(TblRoles.id).all() # type: ignore
 
     def get_by_role_name(self, db: Session, role_name: str)->Optional[TblRoles]:
         """

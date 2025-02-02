@@ -9,7 +9,6 @@ class UserRegistrationResponse(BaseModel):
     id: int
     full_name: str
     email: EmailStr
-    hashed_password: str
     is_active: Optional[bool] = False
 
     class Config:
