@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from api.v1 import (
     login_controller,
+    permissions_controller,
     roles_controller,
     user_management_controller,
 )
@@ -11,6 +12,11 @@ api_router_v1.include_router(
     login_controller,
     prefix="/auth",
     tags=["auth"]
+)
+api_router_v1.include_router(
+    permissions_controller,
+    prefix="/permissions",
+    tags=["permissions"]
 )
 api_router_v1.include_router(
     roles_controller,

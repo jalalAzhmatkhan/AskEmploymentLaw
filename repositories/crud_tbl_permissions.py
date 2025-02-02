@@ -19,6 +19,17 @@ class CRUDTblPermissions:
         """
         return db.query(TblPermissions).filter(TblPermissions.id == id).first() # type: ignore
 
+    def get_by_ids(self, db: Session, ids: List[int])->Optional[TblPermissions]:
+        """
+        Get TblPermissions by many ids
+        :param db:
+        :param ids:
+        :return:
+        """
+        return db.query(TblPermissions).order_by(  # type: ignore
+            TblPermissions.permission_name,  # type: ignore
+        ).distinct().filter(TblPermissions.id.in_(ids)).all()  # type: ignore
+
     def get_by_name(self, db: Session, name: str)->Optional[TblPermissions]:
         """
         Get TblPermissions by exact permission name
@@ -26,7 +37,7 @@ class CRUDTblPermissions:
         :param name:
         :return:
         """
-        return db.query(TblPermissions).filter(TblPermissions.permission_name == name).first() # type: ignore
+        return db.query(TblPermissions).filter(TblPermissions.permission_name == name).first()  # type: ignore
 
     def get_all(self, db:Session)->List[TblPermissions]:
         """
@@ -57,7 +68,9 @@ class CRUDTblPermissions:
         :param name:
         :return:
         """
-        return db.query(TblPermissions).filter(TblPermissions.permission_name.like(f"%{name}%")).all() # type: ignore
+        return db.query(TblPermissions).filter(  # type: ignore
+            TblPermissions.permission_name.like(f"%{name}%")  # type: ignore
+        ).all()  # type: ignore
 
     def insert(self, db: Session, obj_in: PermissionsSchema) -> TblPermissions:
         """
@@ -73,7 +86,11 @@ class CRUDTblPermissions:
         db.refresh(db_obj)
         return db_obj
 
-    def bulk_insert(self, db: Session, obj_in: List[PermissionsSchema]) -> List[TblPermissions]:
+    def bulk_insert(
+        self,
+        db: Session,
+        obj_in: List[PermissionsSchema],
+    ) -> List[TblPermissions]:
         """
         Insert new TblPermissions
         :param db:
@@ -102,7 +119,7 @@ class CRUDTblPermissions:
         db.refresh(db_obj)
         return db_obj
 
-    def delete(self, db: Session, db_obj: TblPermissions):
+    def delete(self, db: Session, db_obj: TblPermissions)->TblPermissions:
         """
         Delete TblPermissions
         :param db:
@@ -111,5 +128,6 @@ class CRUDTblPermissions:
         """
         db.delete(db_obj)
         db.commit()
+        return db_obj
 
 crud_tbl_permissions = CRUDTblPermissions()
