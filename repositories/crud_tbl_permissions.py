@@ -19,7 +19,7 @@ class CRUDTblPermissions:
         """
         return db.query(TblPermissions).filter(TblPermissions.id == id).first() # type: ignore
 
-    def get_by_ids(self, db: Session, ids: List[int])->Optional[TblPermissions]:
+    def get_by_ids(self, db: Session, ids: List[int])->List[TblPermissions]:
         """
         Get TblPermissions by many ids
         :param db:

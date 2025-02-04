@@ -34,6 +34,7 @@ HTTP_STATUS_DETAIL_ROLE_NAME_LENGTH_TOO_SHORT = "Role name is too short."
 HTTP_STATUS_DETAIL_ROLE_NOT_FOUND = "Role not found."
 HTTP_STATUS_DETAIL_USER_ALREADY_DELETED = "The associated user has already been deleted."
 HTTP_STATUS_DETAIL_USER_ALREADY_EXISTS = "User with this email already exists."
+HTTP_STATUS_DETAIL_USER_NOT_FOUND = "User not found."
 
 # API Response Headers
 HEADERS_WWW_AUTHENTICATE = "WWW-Authenticate"
