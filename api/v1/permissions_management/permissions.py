@@ -6,7 +6,14 @@ from sqlalchemy.orm import Session
 from constants.core import security as security_constants
 from core.db_connection import database
 from models import TblUsers
-from schemas import PermissionsCreateRequest, PermissionsUpdateRequest, PermissionsResponse
+from schemas import (
+    PermissionsCreateRequest,
+    PermissionsUpdateRequest,
+    PermissionsResponse,
+    RolePermissionsMappingRequest,
+    RolePermissionsMappingResponse,
+    UserRolePermissionsMappingsResponse,
+)
 from services import auth_service, permission_service
 
 permissions_controller = APIRouter()
@@ -144,3 +151,127 @@ def delete_permission(
     :return:
     """
     return permission_service.delete_a_permission(db=db, permission_id=permission_id)
+
+@permissions_controller.get(
+    "/v1/permissions/role_permission/all",
+    response_model=List[RolePermissionsMappingResponse]
+)
+def get_all_role_permissions_mapping(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            auth_service.get_current_active_user,
+            scopes=[security_constants.PERMISSION_READ_ALL_PERMISSIONS_MAPPING]
+        )
+    ]
+)->List[RolePermissionsMappingResponse]:
+    """
+    API to Get All Role-Permissions Mapping
+    :param db:
+    :param current_user:
+    :return:
+    """
+    return permission_service.get_all_role_permissions_map(db=db)
+
+@permissions_controller.get(
+    "/v1/permissions/role_permission/role",
+    response_model=RolePermissionsMappingResponse
+)
+def get_role_permissions_mapping_by_role_id(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    id: int,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            auth_service.get_current_active_user,
+            scopes=[security_constants.PERMISSION_READ_ROLE_PERMISSIONS_MAPPING_DTL]
+        )
+    ]
+)->RolePermissionsMappingResponse:
+    """
+    API to Get Role-Permissions Mapping by Role ID
+    :param db:
+    :param id:
+    :param current_user:
+    :return:
+    """
+    return permission_service.get_role_permissions_map(db=db, role_id=id)
+
+@permissions_controller.get(
+    "/v1/permissions/role_permission/user",
+    response_model=UserRolePermissionsMappingsResponse
+)
+def get_role_permissions_mapping_by_user_id(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    id: int,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            auth_service.get_current_active_user,
+            scopes=[security_constants.PERMISSION_READ_USER_PERMISSIONS_MAPPING_DTL]
+        )
+    ]
+)->UserRolePermissionsMappingsResponse:
+    """
+    API to get Role-Permissions Mapping by User ID
+    :param db:
+    :param id:
+    :param current_user:
+    :return:
+    """
+    return permission_service.get_role_permissions_by_user_id(db=db, user_id=id)
+
+@permissions_controller.post("/role_permission/map", response_model=RolePermissionsMappingResponse)
+def role_permissions_mapping(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    data: RolePermissionsMappingRequest,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            auth_service.get_current_active_user,
+            scopes=[security_constants.PERMISSION_WRITE_ROLE_PERMISSIONS_MAPPING]
+        )
+    ]
+)->RolePermissionsMappingResponse:
+    """
+    API to Plot role_id into permissions
+    :param db:
+    :param data:
+    :param current_user:
+    :return:
+    """
+    return permission_service.role_permission_map(
+        db=db,
+        role_id=data.role_id,
+        mapped_permissions=data.permission_ids
+    )
+
+@permissions_controller.delete(
+    "/role_permission/map",
+    response_model=RolePermissionsMappingResponse
+)
+def delete_role_permissions_mapping_by_role_id(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    role_id: int,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            auth_service.get_current_active_user,
+            scopes=[security_constants.PERMISSION_DELETE_ROLE_PERMISSIONS_MAPPING]
+        )
+    ]
+)->RolePermissionsMappingResponse:
+    """
+    API to Delete Role-Permissions Mapping by role_id
+    :param db:
+    :param role_id:
+    :param current_user:
+    :return:
+    """
+    return permission_service.delete_role_permissions_map_by_role_id(db=db, role_id=role_id)

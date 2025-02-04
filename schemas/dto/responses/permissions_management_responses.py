@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic import BaseModel
 
 class PermissionsResponse(BaseModel):
@@ -13,3 +15,19 @@ class PermissionsResponse(BaseModel):
         Configuration for the ORM mode
         """
         orm_mode = True
+
+class RolePermissionsMappingResponse(BaseModel):
+    """
+    A schema for Displaying Role-Permissions mapping Response
+    """
+    role_id: int
+    role_name: str
+    permissions: List[PermissionsResponse]
+
+class UserRolePermissionsMappingsResponse(BaseModel):
+    """
+    A schema for Displaying the User's Role-Permissions mapping Response
+    """
+    user_id: int
+    full_name: str
+    role_permissions: List[RolePermissionsMappingResponse]
