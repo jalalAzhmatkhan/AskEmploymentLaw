@@ -153,7 +153,7 @@ def delete_permission(
     return permission_service.delete_a_permission(db=db, permission_id=permission_id)
 
 @permissions_controller.get(
-    "/v1/permissions/role_permission/all",
+    "/role_permission/all",
     response_model=List[RolePermissionsMappingResponse]
 )
 def get_all_role_permissions_mapping(
@@ -176,7 +176,7 @@ def get_all_role_permissions_mapping(
     return permission_service.get_all_role_permissions_map(db=db)
 
 @permissions_controller.get(
-    "/v1/permissions/role_permission/role",
+    "/role_permission/role",
     response_model=RolePermissionsMappingResponse
 )
 def get_role_permissions_mapping_by_role_id(
@@ -201,7 +201,7 @@ def get_role_permissions_mapping_by_role_id(
     return permission_service.get_role_permissions_map(db=db, role_id=id)
 
 @permissions_controller.get(
-    "/v1/permissions/role_permission/user",
+    "/role_permission/user",
     response_model=UserRolePermissionsMappingsResponse
 )
 def get_role_permissions_mapping_by_user_id(
