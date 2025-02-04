@@ -1,6 +1,7 @@
 import json
 from typing import List, Optional
 
+from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
 from models import TblPermissions, TblRoles, TblRolePermissions, TblUsers, TblUserRole
@@ -10,6 +11,14 @@ class CRUDUserRoles:
     """
     CRUD for Tbl_User_Role
     """
+    def get_all(self, db: Session)->List[TblUserRole]:
+        """
+        Get all TblUserRole data
+        :param db:
+        :return:
+        """
+        return db.query(TblUserRole).all()  # type: ignore
+
     def get_by_id(self, db: Session, id: int) -> Optional[TblUserRole]:
         """
         Get TblUserRole by id
@@ -171,5 +180,23 @@ class CRUDUserRoles:
         db.delete(db_obj)
         db.commit()
         return db_obj
+
+    def bulk_delete(self, db: Session, db_objs: List[TblUserRole])->List[TblUserRole]:
+        """
+        Bulk Delete TblUserRole
+        :param db:
+        :param db_objs:
+        :return:
+        """
+        if not db_objs:
+            return
+        userroles_id = [item_obj.id for item_obj in db_objs]
+        db.execute(
+            delete(TblRolePermissions).where(
+                TblRolePermissions.id.in_(userroles_id)  # type: ignore
+            )
+        )
+        db.commit()
+        return db_objs
 
 crud_tbl_userroles = CRUDUserRoles()
