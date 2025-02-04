@@ -62,3 +62,13 @@ PERMISSION_WRITE_ROLE_PERMISSIONS_MAPPING = "write:rolepermissions-mapping"
 PERMISSION_WRITE_ROLE_PERMISSIONS_MAPPING_DESC = "Write role-permissions mapping"
 PERMISSION_DELETE_ROLE_PERMISSIONS_MAPPING = "delete:rolepermissions-mapping:role"
 PERMISSION_DELETE_ROLE_PERMISSIONS_MAPPING_DESC = "Delete role-permissions mapping by its role"
+
+# User-Roles Mapping
+PERMISSION_READ_ALL_USER_ROLES_MAPPING = "read:userroles-mapping:all"
+PERMISSION_READ_ALL_USER_ROLES_MAPPING_DESC = "Read all user-roles mapping"
+PERMISSION_READ_SPECIFIC_USER_ROLES_MAPPING = "read:userroles-mapping:detail:user"
+PERMISSION_READ_SPECIFIC_USER_ROLES_MAPPING_DESC = "Read a specific user's roles mapping"
+PERMISSION_WRITE_USER_ROLES_MAPPING = "write:userroles-mapping"
+PERMISSION_WRITE_USER_ROLES_MAPPING_DESC = "Write user-roles mapping"
+PERMISSION_DELETE_USER_ROLES_MAPPING = "delete:userroles-mapping"
+PERMISSION_DELETE_USER_ROLES_MAPPING_DESC = "Delete user-roles mapping"
