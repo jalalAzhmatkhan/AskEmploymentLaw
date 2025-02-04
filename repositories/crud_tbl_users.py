@@ -10,6 +10,14 @@ class CRUDTblUsers:
     """
     CRUD for TblUsers
     """
+    def get_all(self, db: Session)->List[TblUsers]:
+        """
+        Get all TblUsers data
+        :param db:
+        :return:
+        """
+        return db.query(TblUsers).all()  # type: ignore
+
     def get_by_id(self, db: Session, id: int)->Optional[TblUsers]:
         """
         Get TblUsers by id

@@ -1,13 +1,26 @@
-from fastapi import HTTPException
 from typing import List
 
-from aiohttp.abc import HTTPException
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
 from constants import general as general_constants
 from core.logger import logger
-from repositories import crud_tbl_roles, crud_tbl_rolepermissions, crud_tbl_userroles
-from schemas import RoleCreate, RolesSchema, RolesScreenResponse, RoleUpdate
+from repositories import (
+    crud_tbl_roles,
+    crud_tbl_rolepermissions,
+    crud_tbl_users,
+    crud_tbl_userroles,
+)
+from schemas import (
+    RoleCreate,
+    RolesSchema,
+    UserRoleSchema,
+    RolesScreenResponse,
+    RoleUpdate,
+    UserRolesMappingRequest,
+    UserRolesResponse,
+)
+
 
 def create_new_role(db: Session, data: RoleCreate)->RolesScreenResponse:
     """
@@ -125,4 +138,91 @@ def delete_role(db: Session, role_id: int)->RolesScreenResponse:
     return RolesScreenResponse(
         id=deleted_role.id,
         role_name=deleted_role.role_name,
+    )
+
+def get_all_userroles_map(db: Session)->List[UserRolesResponse]:
+    """
+    Function to get all user-roles mapping
+    :param db:
+    :return:
+    """
+    responses = []
+    all_users = crud_tbl_users.get_all(db=db)
+    for user in all_users:
+        response = UserRolesResponse(
+            user_id=user.id,
+            full_name=user.full_name,
+            roles=get_roles_by_user_id(db=db, user_id=user.id)
+        )
+        responses.append(response)
+
+    return responses
+
+def get_userroles_map_by_user_id(db: Session, user_id: int)->UserRolesResponse:
+    """
+    Function to get User-Roles mapping by user_id
+    :param db:
+    :param user_id:
+    :return:
+    """
+    found_user = crud_tbl_users.get_by_id(db=db, user_id=user_id)
+    if not found_user:
+        raise HTTPException(
+            status_code=general_constants.HTTP_STATUS_ERROR_BAD_REQUEST,
+            detail=general_constants.HTTP_STATUS_DETAIL_USER_NOT_FOUND,
+        )
+    user_roles = get_roles_by_user_id(db=db, user_id=user_id)
+    return UserRolesResponse(
+        user_id=user_id,
+        full_name=found_user.full_name,
+        roles=user_roles,
+    )
+
+def user_roles_map(
+    db: Session,
+    request_data: UserRolesMappingRequest
+)->UserRolesResponse:
+    """
+    Function to map user-roles
+    :param db:
+    :param request_data:
+    :return:
+    """
+    existing_mapping = crud_tbl_userroles.get_by_user_id(db=db, user_id=request_data.user_id)
+    if len(existing_mapping) > 0:
+        crud_tbl_userroles.bulk_delete(db=db, db_objs=existing_mapping)
+
+    tobe_inserted_data = [
+        UserRoleSchema(
+            role_id=role,
+            user_id=request_data.user_id,
+        )
+        for role in request_data.roles_id
+    ]
+    crud_tbl_userroles.bulk_insert(db=db, obj_in=tobe_inserted_data)
+    return get_userroles_map_by_user_id(db=db, user_id=request_data.user_id)
+
+def delete_user_roles_map(db: Session, id: int)->UserRolesResponse:
+    """
+    Function to delete user-roles mapping by id
+    :param db:
+    :param id:
+    :return:
+    """
+    found_mapping = crud_tbl_userroles.get_by_id(db=db, id=id)
+    if not found_mapping:
+        raise HTTPException(
+            status_code=general_constants.HTTP_STATUS_ERROR_BAD_REQUEST,
+            detail=general_constants.HTTP_STATUS_DETAIL_NOT_FOUND,
+        )
+    found_user = crud_tbl_users.get_by_id(db=db, id=found_mapping.user_id)
+    found_role = crud_tbl_roles.get_by_id(db=db, id=found_mapping.role_id)
+    crud_tbl_userroles.delete(db=db, db_obj=found_mapping)
+    return UserRolesResponse(
+        user_id=found_mapping.user_id,
+        full_name=found_user.full_name if found_user is not None else "",
+        roles=[RolesScreenResponse(
+            id=found_role.id,
+            role_name=found_role.role_name,
+        )]
     )

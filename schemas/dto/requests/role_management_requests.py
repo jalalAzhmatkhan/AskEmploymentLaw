@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -13,3 +13,10 @@ class RoleUpdate(RoleCreate):
     A schema to update a role
     """
     role_name: Optional[str] = None
+
+class UserRolesMappingRequest(BaseModel):
+    """
+    A schema to map user-roles
+    """
+    user_id: int
+    roles_id: List[int]

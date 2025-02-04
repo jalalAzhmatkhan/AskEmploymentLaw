@@ -9,7 +9,13 @@ from constants import general as general_constants
 from core.db_connection import database
 from core.logger import logger
 from models import TblUsers
-from schemas import RoleCreate, RolesScreenResponse, RoleUpdate
+from schemas import (
+    RoleCreate,
+    RolesScreenResponse,
+    RoleUpdate,
+    UserRolesMappingRequest,
+    UserRolesResponse,
+)
 from services import auth_service, role_service
 
 roles_controller = APIRouter()
@@ -134,3 +140,89 @@ def delete_a_role(
     :return:
     """
     return role_service.delete_role(db=db, role_id=role_id)
+
+@roles_controller.get("/user_roles/all", response_model=List[UserRolesResponse])
+def get_all_userroles_mapping(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            auth_service.get_current_active_user,
+            scopes=[security_constants.PERMISSION_READ_ALL_USER_ROLES_MAPPING]
+        )
+    ]
+)->List[UserRolesResponse]:
+    """
+    API to get All User-Roles Mapping
+    :param db:
+    :param current_user:
+    :return:
+    """
+    return role_service.get_all_userroles_map(db=db)
+
+@roles_controller.get("/user_roles/user", response_model=UserRolesResponse)
+def get_userroles_mapping_by_user_id(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    id: int,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            auth_service.get_current_active_user,
+            scopes=[security_constants.PERMISSION_READ_SPECIFIC_USER_ROLES_MAPPING]
+        )
+    ]
+)->UserRolesResponse:
+    """
+    API to Get User-Roles mapping by user_id
+    :param db:
+    :param id:
+    :param current_user:
+    :return:
+    """
+    return role_service.get_userroles_map_by_user_id(db=db, user_id=id)
+
+@roles_controller.post("/user_roles", response_model=UserRolesResponse)
+def insert_user_roles_mapping(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    data: UserRolesMappingRequest,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            auth_service.get_current_active_user,
+            scopes=[security_constants.PERMISSION_WRITE_USER_ROLES_MAPPING]
+        )
+    ]
+)->UserRolesResponse:
+    """
+    API to Create User-Roles mapping
+    :param db:
+    :param data:
+    :param current_user:
+    :return:
+    """
+    return role_service.user_roles_map(db=db, request_data=data)
+
+@roles_controller.delete("/user_roles", response_model=UserRolesResponse)
+def delete_user_roles_mapping(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    id: int,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            auth_service.get_current_active_user,
+            scopes=[security_constants.PERMISSION_DELETE_USER_ROLES_MAPPING]
+        )
+    ]
+)->UserRolesResponse:
+    """
+    API to Delete User-Roles Mapping by its ID
+    :param db:
+    :param id:
+    :param current_user:
+    :return:
+    """
+    return role_service.delete_user_roles_map(db=db, id=id)

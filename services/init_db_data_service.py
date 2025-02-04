@@ -245,6 +245,22 @@ class Initialize_Data:
                 permission_name=security_constants.PERMISSION_DELETE_ROLE_PERMISSIONS_MAPPING,
                 permission_description=security_constants.PERMISSION_DELETE_ROLE_PERMISSIONS_MAPPING_DESC,
             ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_READ_ALL_USER_ROLES_MAPPING,
+                permission_description=security_constants.PERMISSION_READ_ALL_USER_ROLES_MAPPING_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_READ_SPECIFIC_USER_ROLES_MAPPING,
+                permission_description=security_constants.PERMISSION_READ_SPECIFIC_USER_ROLES_MAPPING_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_WRITE_USER_ROLES_MAPPING,
+                permission_description=security_constants.PERMISSION_WRITE_USER_ROLES_MAPPING_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_DELETE_USER_ROLES_MAPPING,
+                permission_description=security_constants.PERMISSION_DELETE_USER_ROLES_MAPPING_DESC,
+            ),
         ]
         existing_permissions = crud_tbl_permissions.get_all(self.db)
         existing_permission_names = [
