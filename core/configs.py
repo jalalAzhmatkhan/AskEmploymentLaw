@@ -79,6 +79,9 @@ class Settings(BaseSettings):
     RABBITMQ_CONNECTION_MAX_TRIES: int
     RABBITMQ_WAIT_SECONDS: int
 
+    # Unit Test
+    TEST_LLM_SERVICE: bool = False
+
     # Vector Database config
     VECTOR_DB_HOST: str
     VECTOR_DB_PORT: str
