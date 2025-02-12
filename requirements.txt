@@ -43,6 +43,7 @@ python-dateutil==2.9.0.post0
 python-jose==3.3.0
 python-multipart==0.0.20
 scikit-learn==1.6.1
+six==1.17.0
 sqlalchemy==2.0.37
 streamlit==1.41.1
 streamlit-router==0.1.0
