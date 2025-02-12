@@ -3,7 +3,6 @@ from jose import jwt, JWTError
 import pytest
 
 from constants.core import security as security_constants
-from core.configs import settings
 from core.security import create_access_token, hash_password, verify_password
 from tests import faker
 
@@ -22,6 +21,7 @@ def test_create_access_token():
         permissions_test_case_1,
         subject_test_case_1,
         expires_delta_test_case_1,
+        "abc12345DeF!",
     )
 
     assert isinstance(token_test_case_1, str), "The generated token should be a string"
@@ -30,7 +30,7 @@ def test_create_access_token():
     try:
         decoded_token_test_case_1 = jwt.decode(
             token_test_case_1,
-            settings.SECRET_KEY,
+            "abc12345DeF!",
             algorithms=[security_constants.ENCODING_ALGORITHM]
         )
         assert decoded_token_test_case_1["sub"] == subject_test_case_1, "Subject mismatch."

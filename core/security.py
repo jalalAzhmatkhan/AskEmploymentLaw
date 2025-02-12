@@ -24,7 +24,8 @@ def create_access_token(
     role_id: List[int],
     permissions: List[str],
     subject: Union[str, Any],
-    expires_delta: timedelta = None
+    expires_delta: timedelta = None,
+    secret_key: str = settings.SECRET_KEY,
 ) -> str:
     """
     Function to create an access token.
@@ -32,6 +33,7 @@ def create_access_token(
     :param permissions:
     :param subject:
     :param expires_delta:
+    :param secret_key:
     :return:
     """
     if expires_delta:
@@ -48,7 +50,7 @@ def create_access_token(
     )
     encoded_jwt = jwt.encode(
         json.loads(to_encode.json()),
-        settings.SECRET_KEY,
+        secret_key,
         algorithm=security_constants.ENCODING_ALGORITHM
     )
     return encoded_jwt
