@@ -1,0 +1,6 @@
+DEVICE_MAP_AUTO = "auto"
+DEVICE_CUDA = "cuda"
+DEVICE_CPU = "cpu"
+GENERATED_TEXT = "generated_text"
+PIPELINE_TEXT_GENERATION = "text-generation"
+TERMINATOR_TOKEN="<|eot_id|>"

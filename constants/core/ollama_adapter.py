@@ -1,0 +1,51 @@
+from typing import Literal
+
+HTTP_SCHEME_STR = "http://"
+HTTPS_SCHEME_STR = "https://"
+LOCALHOST_URI = "http://localhost"
+MODEL_TAG_LATEST = "latest"
+OLLAMA_DEFAULT_PORT = 11434
+OLLAMA_MODELS_LITERAL = Literal[
+    "codellama",
+    "deepseek-coder",
+    "deepseek-coder-v2",
+    "deepseek-llm",
+    "deepseek-r1",
+    "deepseek-v2",
+    "deepseek-v2.5",
+    "duckdb-nsql",
+    "gemma",
+    "gemma2",
+    "llama2",
+    "llama2-uncensored",
+    "llama3",
+    "llama3-chatqa",
+    "llama3.1",
+    "llama3.2",
+    "llama3.2-vision",
+    "llama3.3",
+    "llama-pro",
+    "llava",
+    "llava-phi3",
+    "medllama2",
+    "meditron",
+    "mistral",
+    "mistral-large",
+    "mistral-small",
+    "openchat",
+    "orca2",
+    "phi4",
+    "qwen",
+    "qwen2",
+    "qwen2-math",
+    "qwen2.5",
+    "qwen2.5-coder",
+    "sailor2",
+    "shieldgemma",
+    "smollm",
+    "smollm2",
+    "solar-pro",
+    "starcoder2",
+    "tinyllama",
+    "yarn-mistral",
+]

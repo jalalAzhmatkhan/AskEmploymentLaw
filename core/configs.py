@@ -2,11 +2,12 @@ import os
 from typing import Any, Dict, List, Literal, Optional, Union
 
 from dotenv import load_dotenv
-from pydantic import AnyHttpUrl, BaseSettings, validator
+from pydantic import AnyHttpUrl, validator
+from pydantic_settings import BaseSettings
 
 dotenv_path = os.path.join(os.path.abspath(os.path.dirname(os.path.dirname(__file__))), ".env")
 if not os.path.exists(dotenv_path):
-    raise ValueError("No .env file found.")
+    print("No .env file found.")
 
 load_dotenv(dotenv_path)
 
@@ -77,6 +78,9 @@ class Settings(BaseSettings):
     RABBITMQ_PASSWORD: str
     RABBITMQ_CONNECTION_MAX_TRIES: int
     RABBITMQ_WAIT_SECONDS: int
+
+    # Unit Test
+    TEST_LLM_SERVICE: bool = False
 
     # Vector Database config
     VECTOR_DB_HOST: str

@@ -29,6 +29,14 @@ python .\core\rabbitmq_prestart.py
 
 echo "Initializing data..."
 python .\services\init_db_data_service.py
+cls
+
+echo ==========================================================
+echo "|                   Ask Employment Law                   |"
+echo ==========================================================
+title Ask Employment Law - Run Unit Tests
+echo "Running unit tests..."
+pytest . --disable-pytest-warnings
 
 echo "Running backend server..."
 cls
