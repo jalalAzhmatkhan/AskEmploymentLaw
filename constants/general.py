@@ -38,3 +38,10 @@ HTTP_STATUS_DETAIL_USER_NOT_FOUND = "User not found."
 
 # API Response Headers
 HEADERS_WWW_AUTHENTICATE = "WWW-Authenticate"
+
+# OS Platform
+OS_WINDOWS = "Windows"
+
+# Indonesian Locale
+INDONESIAN_WINDOWS_LOCALE = "Indonesian_Indonesia.1252"
+INDONESIAN_LINUX_LOCALE = "id_ID.utf8"

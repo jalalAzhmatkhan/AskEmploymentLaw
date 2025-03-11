@@ -1,5 +1,16 @@
+from datetime import datetime, date
+import locale
+import platform
 import re
+from typing import Optional
 from urllib.parse import urlparse
+
+from constants.general import (
+    INDONESIAN_WINDOWS_LOCALE,
+    INDONESIAN_LINUX_LOCALE,
+    OS_WINDOWS,
+)
+
 
 def camel_to_snake(camel_case_string: str)->str:
     """
@@ -26,3 +37,20 @@ def get_base_url(url: str)->str:
     """
     parsed_url = urlparse(url)
     return f"{parsed_url.scheme}://{parsed_url.netloc}"
+
+def parse_indonesian_date(
+    datestr: str,
+    date_format: Optional[str] = "%d %B %Y",
+)->date:
+    """
+    Function to convert Indonesian date string to date object
+    :param datestr:
+    :param date_format:
+    :return:
+    """
+    if platform.system() == OS_WINDOWS:
+        locale.setlocale(locale.LC_TIME, INDONESIAN_WINDOWS_LOCALE)  # Windows locale
+    else:
+        locale.setlocale(locale.LC_TIME, INDONESIAN_LINUX_LOCALE)  # Linux/MacOS locale
+
+    return datetime.strptime(datestr, date_format).date()

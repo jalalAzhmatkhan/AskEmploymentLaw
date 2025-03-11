@@ -37,7 +37,6 @@ class OllamaAdapter:
             if host.startswith(HTTP_SCHEME_STR) or host.startswith(HTTPS_SCHEME_STR) \
             else HTTP_SCHEME_STR + host
         self.hosted_ollama_url = f"{host_name}:{port}"
-        self.prestart_check()
 
     async def download_model(self, model_name: str):
         client = AsyncClient(
@@ -81,12 +80,14 @@ class OllamaAdapter:
         :param messages:
         :return:
         """
+        await self.prestart_check()  # Check if the model is ready to be used
+
         client = AsyncClient(
             host=self.hosted_ollama_url
         )
         chat_content = ""
         try:
-            messages_list = [message.dict() for message in messages]
+            messages_list = [message.model_dump() for message in messages]
             chat_response = await client.chat(
                 model=self.model_name,
                 messages=messages_list,
