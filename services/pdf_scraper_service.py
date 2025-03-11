@@ -71,7 +71,7 @@ class Scraper:
         self,
         extracted_text: str,
         user_prompt: LLMAdapterUserMessageRequest
-    )->Optional[Union[Dict[str, str], List[Dict[str, str]]]]:
+    )->Optional[Dict[str, str]]:
         """
         Function to analyze the extracted text
         :param extracted_text:
@@ -249,8 +249,6 @@ Tentang| Pengelolaan Minyak dan Gas    \n
             text_reviews = text_reviews.replace(NONE_TYPE_TXT, "")
             all_text_markdown = text_description + "\n\n" + text_reviews
 
-            logger.info(f"Scraper: scrape: all_text_markdown: {all_text_markdown}")
-
             text_desc_prompt = LLMAdapterUserMessageRequest(
                 role="user",
                 content="""
@@ -305,7 +303,7 @@ Tentang| Pengelolaan Minyak dan Gas    \n
                 <example_response>
                 \n\n
                 Berikut markdown yang akan anda ekstrak.
-                **Markdown:**\n
+                **Markdown:**
             """
             text_desc_prompt.content = text_desc_prompt.content.replace(
                 "<example_response>",
