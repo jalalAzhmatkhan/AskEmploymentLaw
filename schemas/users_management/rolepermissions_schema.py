@@ -18,7 +18,7 @@ class RolePermissionsInDBSchema(RolePermissionsSchema):
         """
         Configuration for the ORM mode
         """
-        orm_mode = True
+        from_attributes = True
 
 class RolePermissionsUpdateSchema(BaseModel):
     """
@@ -41,4 +41,4 @@ class RolePermissionsScreenSchemaInDB(RolePermissionsScreenSchema):
         """
         Configuration for the ORM mode
         """
-        orm_mode = True
+        from_attributes = True

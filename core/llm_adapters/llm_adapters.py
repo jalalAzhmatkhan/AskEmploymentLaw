@@ -12,12 +12,14 @@ from constants.core import (
     LLM_SERVICE_GROQ,
     LLM_SERVICE_HUGGINGFACE,
     LLM_SERVICE_OLLAMA,
+    LLM_SERVICE_OLLAMA_VIA_LANGCHAIN,
     LLM_SERVICE_OPENAI,
     OLLAMA_DEFAULT_PORT,
 )
 from core.llm_adapters.groq_adapter import GroqAdapter
 from core.llm_adapters.huggingface_adapter import HuggingfaceAdapter
 from core.llm_adapters.ollama_adapter import OllamaAdapter
+from core.llm_adapters.ollama_langchain_adapter import OllamaLangchainAdapter
 from core.llm_adapters.openai_adapter import OpenAIAdapter
 from core.logger import logger
 from schemas.core import LLMAdapterMessageRequest, LLMAdapterResponse
@@ -34,6 +36,7 @@ class LLMAdapters:
             "groq",
             "huggingface",
             "ollama",
+            "ollama-langchain",
             "openai"
         ] = LLM_SERVICE_OPENAI,
         **kwargs
@@ -58,7 +61,7 @@ class LLMAdapters:
                 api_key=api_key,
                 model_id=model
             )
-        elif llm_service == LLM_SERVICE_OLLAMA:
+        elif llm_service == LLM_SERVICE_OLLAMA or llm_service == LLM_SERVICE_OLLAMA_VIA_LANGCHAIN:
             if KEYWORD_ARGS_HOST not in kwargs and KEYWORD_ARGS_IP_ADDR not in kwargs:
                 req_id = str(uuid4()).replace("-", "")
                 logger.error(f"LLMAdapters: init: {req_id} No host for connecting to Ollama service.")
@@ -95,12 +98,20 @@ class LLMAdapters:
             if KEYWORD_ARGS_MODEL_TAG not in kwargs and KEYWORD_ARGS_TAG in kwargs:
                 tag = kwargs.get(KEYWORD_ARGS_TAG, "")
 
-            self.adapter = OllamaAdapter(
-                host=host,
-                model_name=model, # type: ignore
-                port=port,
-                model_tag=tag,
-            )
+            if llm_service == LLM_SERVICE_OLLAMA:
+                self.adapter = OllamaAdapter(
+                    host=host,
+                    model_name=model, # type: ignore
+                    port=port,
+                    model_tag=tag,
+                )
+            elif llm_service == LLM_SERVICE_OLLAMA_VIA_LANGCHAIN:
+                self.adapter = OllamaLangchainAdapter(
+                    host=host,
+                    chat_model=model, # type: ignore
+                    port=port,
+                    chat_model_tag=tag,
+                )
         elif llm_service == LLM_SERVICE_OPENAI:
             self.adapter = OpenAIAdapter(
                 api_key=api_key,
@@ -122,6 +133,7 @@ class LLMAdapters:
         if response_from_llm:
             if isinstance(response_from_llm, str):
                 cleaned_response = response_from_llm.replace('```python', '').strip()
+                cleaned_response = cleaned_response.replace('```json', '').strip()
                 try:
                     return json.loads(cleaned_response)
                 except (SyntaxError, ValueError):
@@ -137,7 +149,7 @@ class LLMAdapters:
                 logger.warn(f"LLMAdapters: clean_and_parse_response: {req_id} Unexpected response type:"
                             f"{type(response_from_llm)}")
 
-    def inference(
+    async def inference(
         self,
         messages: List[LLMAdapterMessageRequest]
     )->Union[Optional[List[Dict[str, str]]], Optional[Dict[str, str]]]:
@@ -146,10 +158,9 @@ class LLMAdapters:
         :param messages:
         :return:
         """
-        response_from_adapter = {}
-        if self.service != "ollama":
+        if self.service != LLM_SERVICE_OLLAMA and self.service != LLM_SERVICE_OLLAMA_VIA_LANGCHAIN:
             response_from_adapter = self.adapter.infer(messages=messages)
         else:
-            response_from_adapter = asyncio.run(self.adapter.infer(messages=messages)) # type: ignore
+            response_from_adapter = await self.adapter.infer(messages=messages)
         json_response = self.clean_and_parse_response(response_from_adapter)
         return json_response

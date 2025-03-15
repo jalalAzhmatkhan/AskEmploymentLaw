@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 class ScrapedLawStatusSchema(BaseModel):
@@ -6,3 +7,4 @@ class ScrapedLawStatusSchema(BaseModel):
     """
     title: str
     about: str
+    url: Optional[str] = None

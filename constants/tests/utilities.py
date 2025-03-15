@@ -17,3 +17,13 @@ ASSERTED_BASE_URL_3 = "ftp://bpk.go.id"
 TEST_URL_1 = "http://bpk.go.id/Downloads/41132/blablabla.pdf"
 TEST_URL_2 = "https://bpk.go.id/Downloads/32156/xyz%20abc%2052.pdf"
 TEST_URL_3 = "ftp://bpk.go.id/Download/123456/yuisef%20awS%20aw121%205225.pdf"
+
+TEST_INDONESIAN_DATE_1 = "12 Maret 2025"
+TEST_INDONESIAN_DATE_2 = "01 Januari 2023"
+
+ASSERTED_DATE_1 = 12
+ASSERTED_DATE_2 = 1
+ASSERTED_MONTH_1 = 3
+ASSERTED_MONTH_2 = 1
+ASSERTED_YEAR_1 = 2025
+ASSERTED_YEAR_2 = 2023

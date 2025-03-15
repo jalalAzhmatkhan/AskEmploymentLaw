@@ -19,7 +19,7 @@ class UserRoleInDBSchema(UserRoleSchema):
         """
         Configuration schema
         """
-        orm_mode = True
+        from_attributes = True
 
 class UserRoleUpdateSchema(UserRoleSchema):
     """

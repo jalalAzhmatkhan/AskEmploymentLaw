@@ -1,6 +1,7 @@
 import json
 from typing import List, Optional
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from models import TblDocumentType
@@ -35,7 +36,9 @@ class CRUDTblDocumentType:
         :param name:
         :return:
         """
-        return db.query(TblDocumentType).filter(TblDocumentType.document_type.like(f"%{name}%")).all() # type: ignore
+        return db.query(TblDocumentType).filter(  # type: ignore
+            func.lower(TblDocumentType.document_type).like(f"%{name.lower()}%")  # type: ignore
+        ).all() # type: ignore
 
     def get_all(self, db: Session)->List[TblDocumentType]:
         """
