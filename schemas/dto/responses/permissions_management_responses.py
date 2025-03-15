@@ -14,7 +14,7 @@ class PermissionsResponse(BaseModel):
         """
         Configuration for the ORM mode
         """
-        orm_mode = True
+        from_attributes = True
 
 class RolePermissionsMappingResponse(BaseModel):
     """
