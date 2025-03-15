@@ -133,6 +133,7 @@ class LLMAdapters:
         if response_from_llm:
             if isinstance(response_from_llm, str):
                 cleaned_response = response_from_llm.replace('```python', '').strip()
+                cleaned_response = cleaned_response.replace('```json', '').strip()
                 try:
                     return json.loads(cleaned_response)
                 except (SyntaxError, ValueError):

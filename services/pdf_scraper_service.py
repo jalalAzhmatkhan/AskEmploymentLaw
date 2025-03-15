@@ -1,5 +1,4 @@
 # pylint: skip-file
-import asyncio
 from typing import Dict, List, Literal, Optional, Union
 from uuid import uuid4
 
@@ -186,7 +185,9 @@ Tentang| Pengelolaan Minyak dan Gas    \n
             user_prompt.content += "\n" + extracted_text
         message_to_llm.append(user_prompt)
 
-        return await llm_adapter.inference(messages=message_to_llm)
+        llm_inference = await llm_adapter.inference(messages=message_to_llm)
+        logger.info(f"Scraper: analyze_extracted_text: LLM inference response: {llm_inference}", exc_info=True)
+        return llm_inference
 
     def extract_text_from_markdown(self, markdown: str)->Optional[str]:
         """
@@ -218,7 +219,7 @@ Tentang| Pengelolaan Minyak dan Gas    \n
             )
             page = await context.new_page()
 
-            await page.goto(url)
+            await page.goto(url, timeout=60000)
 
             # Wait for the necessary elements to load
             await page.wait_for_selector("body")
@@ -310,30 +311,15 @@ Tentang| Pengelolaan Minyak dan Gas    \n
                 pdf_scraper_constants.EXAMPLE_ANALYZED_RESPONSE
             )
 
-            analyzed_text_desc = await self.analyze_extracted_text(
+            analyzed_text = await self.analyze_extracted_text(
                 all_text_markdown,
                 text_desc_prompt
             )
 
             logger.info(f"Scraper: scrape: the resulting information from {url} is: "
-                        f"{analyzed_text_desc}", exc_info=True)
+                        f"{analyzed_text}", exc_info=True)
 
             await page.close()
             await context.close()
 
         return scrape_results
-
-async def main_try():
-    law_scraper = Scraper(
-        url=pdf_scraper_constants.LAW_SCRAPER_STARTING_PAGE,
-        llm_service="ollama",
-        llm_model="mistral",
-        llm_tag="latest",
-        llm_host="http://localhost",
-        llm_port=11434,
-    )
-    results = await law_scraper.scrape()
-    print(f"Scraping results: {results}")
-
-if __name__ == "__main__":
-    asyncio.run(main_try())
