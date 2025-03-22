@@ -1,33 +1,16 @@
-import json
 from typing import List, Optional
 
 from sqlalchemy import delete
 from sqlalchemy.orm import Session
 
 from models import TblPermissions, TblRoles, TblRolePermissions, TblUsers, TblUserRole
+from repositories.crud_base import CRUDBase
 from schemas import UserRoleSchema, UserRoleNameSchema, UserRolesPermissionsSchema
 
-class CRUDUserRoles:
+class CRUDUserRoles(CRUDBase[TblUserRole, UserRoleSchema, UserRoleSchema]):
     """
     CRUD for Tbl_User_Role
     """
-    def get_all(self, db: Session)->List[TblUserRole]:
-        """
-        Get all TblUserRole data
-        :param db:
-        :return:
-        """
-        return db.query(TblUserRole).all()  # type: ignore
-
-    def get_by_id(self, db: Session, id: int) -> Optional[TblUserRole]:
-        """
-        Get TblUserRole by id
-        :param db:
-        :param id:
-        :return:
-        """
-        return db.query(TblUserRole).filter(TblUserRole.id == id).first()  # type: ignore
-
     def get_by_user_id(self, db: Session, user_id: int)->List[TblUserRole]:
         """
         Get TblUserRole by user_id
@@ -70,7 +53,7 @@ class CRUDUserRoles:
         :param user_id:
         :return:
         """
-        return db.query(
+        return db.query(  # type: ignore
             TblUserRole.id,
             TblUserRole.user_id,
             TblUserRole.role_id,
@@ -82,7 +65,7 @@ class CRUDUserRoles:
             TblRoles, TblRoles.id == TblUserRole.role_id, # type: ignore
         ).filter(
             TblUserRole.user_id == user_id # type: ignore
-        ).all()
+        ).all()  # type: ignore
 
     def get_user_role_permissions_by_user_id(
         self,
@@ -121,54 +104,11 @@ class CRUDUserRoles:
                 full_name=user_role.full_name,
                 role_id=user_role.role_id,
                 role_name=user_role.role_name,
-                permissions=[permission.permission_name for permission in permissions],
+                permissions=[permission.permission_name for permission in permissions],  # type: ignore
             )
             responses.append(response)
         return responses
 
-
-    def insert(self, db: Session, obj_in: UserRoleSchema) -> TblUserRole:
-        """
-        Insert new TblUserRole
-        :param db:
-        :param obj_in:
-        :return:
-        """
-        db_obj_data = json.loads(obj_in.json())
-        db_obj = TblUserRole(**db_obj_data) # type: ignore
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
-
-    def bulk_insert(self, db: Session, obj_in: List[UserRoleSchema]) -> List[TblUserRole]:
-        """
-        Insert new TblUserRole
-        :param db:
-        :param obj_in:
-        :return:
-        """
-        db_obj = [TblUserRole(**json.loads(obj.json())) for obj in obj_in] # type: ignore
-        db.add_all(db_obj)
-        db.commit()
-        for db_obj_data in db_obj:
-            db.refresh(db_obj_data)
-        return db_obj
-
-    def update(self, db: Session, db_obj: TblUserRole, obj_in: UserRoleSchema) -> TblUserRole:
-        """
-        Update TblUserRole
-        :param db:
-        :param db_obj:
-        :param obj_in:
-        :return:
-        """
-        db_obj_data = json.loads(obj_in.json())
-        for key, value in db_obj_data.items():
-            setattr(db_obj, key, value)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
 
     def delete(self, db: Session, db_obj: TblUserRole) -> TblUserRole:
         """
@@ -181,7 +121,7 @@ class CRUDUserRoles:
         db.commit()
         return db_obj
 
-    def bulk_delete(self, db: Session, db_objs: List[TblUserRole])->List[TblUserRole]:
+    def bulk_delete(self, db: Session, db_objs: List[TblUserRole])->Optional[List[TblUserRole]]:
         """
         Bulk Delete TblUserRole
         :param db:
@@ -189,7 +129,7 @@ class CRUDUserRoles:
         :return:
         """
         if not db_objs:
-            return
+            return None
         userroles_id = [item_obj.id for item_obj in db_objs]
         db.execute(
             delete(TblRolePermissions).where(
@@ -199,4 +139,4 @@ class CRUDUserRoles:
         db.commit()
         return db_objs
 
-crud_tbl_userroles = CRUDUserRoles()
+crud_tbl_userroles = CRUDUserRoles(TblUserRole)

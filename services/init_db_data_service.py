@@ -1,13 +1,11 @@
 from sqlalchemy.orm import Session
 
-from constants import general as general_constants
 from constants.core import security as security_constants
 from constants.services import init_db_data as init_db_data_constants
 from core.db_connection import database
 from core.configs import settings
 from core.security import hash_password
 from repositories import (
-    crud_tbl_document_type,
     crud_tbl_permissions,
     crud_tbl_roles,
     crud_tbl_rolepermissions,
@@ -15,7 +13,6 @@ from repositories import (
     crud_tbl_userroles,
 )
 from schemas import (
-    DocumentTypeSchema,
     RolesSchema,
     RolePermissionsSchema,
     PermissionsSchema,
@@ -36,76 +33,10 @@ class Initialize_Data:
         """
         self.db = db
 
-    def insert_document_types(self):
-        """
-        Insert document types into the database
-        """
-        document_types_list = [
-            DocumentTypeSchema(
-                document_type=general_constants.IN_PRES,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.KEP_PRES,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.PBL,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.PEN_PRES,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.PER_DA,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.PER_MEN,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.PER_PRES,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.PPPUU,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.PP,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.TAP_MPR,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.UU,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-            DocumentTypeSchema(
-                document_type=general_constants.UU_DARURAT,
-                document_extention=init_db_data_constants.DOCUMENT_EXTENTION_PDF
-            ),
-        ]
-        existing_document_types = crud_tbl_document_type.get_all(self.db)
-        existing_document_types_only = [doctype.document_type for doctype in existing_document_types]
-
-        counter = 0
-        for document_type in document_types_list:
-            if document_type.document_type not in existing_document_types_only:
-                crud_tbl_document_type.insert(self.db, document_type)
-                counter += 1
-
-        print(f"insert_document_types: {counter} new Document types inserted.")
-
     def insert_data(self):
         """
         Insert data into the database
         """
-        self.insert_document_types()
         self.insert_roles()
         self.insert_permissions()
         self.insert_initial_role_permissions_map()

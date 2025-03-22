@@ -162,5 +162,6 @@ class LLMAdapters:
             response_from_adapter = self.adapter.infer(messages=messages)
         else:
             response_from_adapter = await self.adapter.infer(messages=messages)
+        logger.info(f"LLMAdapters: inference: Response from LLM: {response_from_adapter}")
         json_response = self.clean_and_parse_response(response_from_adapter)
         return json_response

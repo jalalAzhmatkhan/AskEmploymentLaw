@@ -5,10 +5,15 @@ from sqlalchemy.orm import Session
 from sqlalchemy import delete
 
 from models import TblPermissions, TblRolePermissions
+from repositories.crud_base import CRUDBase
 from repositories.crud_tbl_roles import crud_tbl_roles
-from schemas import RolePermissionsSchema, PermissionsUpdateSchema, RolePermissionsScreenSchema
+from schemas import (
+    RolePermissionsSchema,
+    RolePermissionsUpdateSchema,
+    RolePermissionsScreenSchema
+)
 
-class CRUDTblRolePermissions:
+class CRUDTblRolePermissions(CRUDBase[TblRolePermissions, RolePermissionsSchema, RolePermissionsUpdateSchema]):
     """
     CRUD for TblRolePermissions
     """
@@ -28,8 +33,8 @@ class CRUDTblRolePermissions:
         :param role_id:
         :return:
         """
-        return (db.query(TblRolePermissions).distinct()
-                .filter(TblRolePermissions.role_id == role_id).all()) # type: ignore
+        return (db.query(TblRolePermissions).distinct()  # type: ignore
+                .filter(TblRolePermissions.role_id == role_id).all())  # type: ignore
 
     def get_by_role_ids(self, db: Session, role_id: List[int])->List[TblRolePermissions]:
         """
@@ -79,8 +84,8 @@ class CRUDTblRolePermissions:
         :param permission_id:
         :return:
         """
-        return (db.query(TblRolePermissions).distinct()
-                .filter(TblRolePermissions.permission_id == permission_id).all()) # type: ignore
+        return (db.query(TblRolePermissions).distinct()  # type: ignore
+                .filter(TblRolePermissions.permission_id == permission_id).all())  # type: ignore
 
     def get_by_permission_ids(self, db: Session, permission_ids: List[int])->List[TblRolePermissions]:
         """
@@ -146,21 +151,6 @@ class CRUDTblRolePermissions:
             db.refresh(db_obj)
         return db_obj_data
 
-    def update(self, db: Session, db_obj: TblRolePermissions,obj_in: PermissionsUpdateSchema) -> TblRolePermissions:
-        """
-        Update TblRolePermissions
-        :param db:
-        :param db_obj:
-        :param obj_in:
-        :return:
-        """
-        db_obj_data = json.loads(obj_in.json())
-        for key, value in db_obj_data.items():
-            setattr(db_obj, key, value)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
-
     def delete(self, db: Session, db_obj: TblRolePermissions)->TblRolePermissions:
         """
         Delete TblRolePermissions
@@ -190,4 +180,4 @@ class CRUDTblRolePermissions:
         db.commit()
         return db_objs
 
-crud_tbl_rolepermissions = CRUDTblRolePermissions()
+crud_tbl_rolepermissions = CRUDTblRolePermissions(TblRolePermissions)
