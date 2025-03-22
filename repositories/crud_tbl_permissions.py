@@ -4,21 +4,13 @@ from typing import Dict, List, Optional
 from sqlalchemy.orm import Session
 
 from models import TblPermissions
+from repositories.crud_base import CRUDBase
 from schemas import PermissionsSchema, PermissionsUpdateSchema
 
-class CRUDTblPermissions:
+class CRUDTblPermissions(CRUDBase[TblPermissions, PermissionsSchema, PermissionsUpdateSchema]):
     """
     CRUD for TblPermissions
     """
-    def get_by_id(self, db: Session, id: int)->Optional[TblPermissions]:
-        """
-        Get TblPermissions by id
-        :param db:
-        :param id:
-        :return:
-        """
-        return db.query(TblPermissions).filter(TblPermissions.id == id).first() # type: ignore
-
     def get_by_ids(self, db: Session, ids: List[int])->List[TblPermissions]:
         """
         Get TblPermissions by many ids
@@ -38,14 +30,6 @@ class CRUDTblPermissions:
         :return:
         """
         return db.query(TblPermissions).filter(TblPermissions.permission_name == name).first()  # type: ignore
-
-    def get_all(self, db:Session)->List[TblPermissions]:
-        """
-        Get All TblPermissions data
-        :param db:
-        :return:
-        """
-        return db.query(TblPermissions).all() # type: ignore
 
     def get_all_name_to_dict(self, db: Session)->Dict[str, str]:
         """
@@ -72,62 +56,4 @@ class CRUDTblPermissions:
             TblPermissions.permission_name.like(f"%{name}%")  # type: ignore
         ).all()  # type: ignore
 
-    def insert(self, db: Session, obj_in: PermissionsSchema) -> TblPermissions:
-        """
-        Insert new TblPermissions
-        :param db:
-        :param obj_in:
-        :return:
-        """
-        db_obj_data = json.loads(obj_in.json())
-        db_obj = TblPermissions(**db_obj_data) # type: ignore
-        db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
-
-    def bulk_insert(
-        self,
-        db: Session,
-        obj_in: List[PermissionsSchema],
-    ) -> List[TblPermissions]:
-        """
-        Insert new TblPermissions
-        :param db:
-        :param obj_in:
-        :return:
-        """
-        db_obj = [TblPermissions(**json.loads(db_obj_data.json())) for db_obj_data in obj_in] # type: ignore
-        db.add_all(db_obj)
-        db.commit()
-        for db_obj_data in db_obj:
-            db.refresh(db_obj_data)
-        return db_obj
-
-    def update(self, db: Session, db_obj: TblPermissions, obj_in: PermissionsUpdateSchema) -> TblPermissions:
-        """
-        Update TblPermissions
-        :param db:
-        :param db_obj:
-        :param obj_in:
-        :return:
-        """
-        db_obj_data = json.loads(obj_in.json())
-        for key, value in db_obj_data.items():
-            setattr(db_obj, key, value)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
-
-    def delete(self, db: Session, db_obj: TblPermissions)->TblPermissions:
-        """
-        Delete TblPermissions
-        :param db:
-        :param db_obj:
-        :return:
-        """
-        db.delete(db_obj)
-        db.commit()
-        return db_obj
-
-crud_tbl_permissions = CRUDTblPermissions()
+crud_tbl_permissions = CRUDTblPermissions(TblPermissions)
