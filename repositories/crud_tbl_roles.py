@@ -46,7 +46,7 @@ class CRUDTblRoles(CRUDBase[TblRoles, RolesSchema, RolesSchema]):
         :param obj_in:
         :return:
         """
-        db_obj = [TblRoles(**json.loads(db_obj_data.model_dump(mode='json'))) for db_obj_data in obj_in] # type: ignore
+        db_obj = [TblRoles(**db_obj_data.model_dump(mode='json')) for db_obj_data in obj_in]  # type: ignore
         db.add_all(db_obj)
         db.commit()
         for db_obj_data in db_obj:
@@ -63,5 +63,17 @@ class CRUDTblRoles(CRUDBase[TblRoles, RolesSchema, RolesSchema]):
         db.delete(db_obj)
         db.commit()
         return db_obj
+
+    def bulk_delete_by_ids(self, db: Session, ids: List[int])->List[TblRoles]:
+        """
+        Delete TblRoles by many IDs
+        :param db:
+        :param ids:
+        :return:
+        """
+        db_objs = db.query(TblRoles).filter(TblRoles.id.in_(ids)).all()
+        db.query(TblRoles).filter(TblRoles.id.in_(ids)).delete(synchronize_session=False)
+        db.commit()
+        return db_objs  # type: ignore
 
 crud_tbl_roles = CRUDTblRoles(TblRoles)

@@ -47,3 +47,4 @@ def test_crud_roles():
 
     # Delete by ID
     crud_tbl_roles.delete_by_id(db=db, id=created_role.id)
+    crud_tbl_roles.bulk_delete_by_ids(db=db, ids=[role.id for role in bulk_inserted_data])

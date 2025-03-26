@@ -1,0 +1,1 @@
+from api.v1.documents_management.documents_uploader import documents_uploader_controller

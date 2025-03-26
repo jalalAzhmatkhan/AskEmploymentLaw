@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from api.v1 import (
+    documents_uploader_controller,
     login_controller,
     permissions_controller,
     roles_controller,
@@ -12,6 +13,11 @@ api_router_v1.include_router(
     login_controller,
     prefix="/auth",
     tags=["auth"]
+)
+api_router_v1.include_router(
+    documents_uploader_controller,
+    prefix="/documents-management",
+    tags=["documents-management"]
 )
 api_router_v1.include_router(
     permissions_controller,

@@ -13,6 +13,16 @@ PERMISSION_UPDATE_ME_DESC = "Update information about current user."
 PERMISSION_DELETE_ME = "delete:me"
 PERMISSION_DELETE_ME_DESC = "Delete information about current user."
 
+## Documents
+PERMISSION_READ_DOCUMENTS = "read:documents"
+PERMISSION_READ_DOCUMENTS_DESC = "Read information about the uploaded Documents"
+PERMISSION_WRITE_DOCUMENTS = "write:documents"
+PERMISSION_WRITE_DOCUMENTS_DESC = "Upload Documents"
+PERMISSION_UPDATE_DOCUMENTS = "update:documents"
+PERMISSION_UPDATE_DOCUMENTS_DESC = "Update information about the uploaded Documents"
+PERMISSION_DELETE_DOCUMENTS = "delete:documents"
+PERMISSION_DELETE_DOCUMENTS_DESC = "Delete information about the uploaded Documents"
+
 ## Document Types
 PERMISSION_READ_DOC_TYPES = "read:document_types"
 PERMISSION_READ_DOC_TYPES_DESC = "Read information about Document Types"

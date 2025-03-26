@@ -199,7 +199,7 @@ def user_roles_map(
         )
         for role in request_data.roles_id
     ]
-    crud_tbl_userroles.bulk_insert(db=db, obj_in=tobe_inserted_data)
+    crud_tbl_userroles.bulk_create(db=db, obj_in=tobe_inserted_data)
     return get_userroles_map_by_user_id(db=db, user_id=request_data.user_id)
 
 def delete_user_roles_map(db: Session, id: int)->UserRolesResponse:

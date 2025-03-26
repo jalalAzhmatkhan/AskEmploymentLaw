@@ -1,4 +1,5 @@
 from datetime import datetime, date
+import hashlib
 import locale
 import platform
 import re
@@ -37,6 +38,14 @@ def get_base_url(url: str)->str:
     """
     parsed_url = urlparse(url)
     return f"{parsed_url.scheme}://{parsed_url.netloc}"
+
+def hash_a_file(file, algorithm: str = 'sha256'):
+    """Hashes the content of a file using the specified algorithm."""
+    hash_func = hashlib.new(algorithm)
+    for chunk in iter(lambda: file.read(4096), b""):
+        hash_func.update(chunk)
+    file.seek(0)  # Reset file pointer after hashing
+    return hash_func.hexdigest()
 
 def parse_indonesian_date(
     datestr: str,
