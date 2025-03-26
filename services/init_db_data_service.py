@@ -93,6 +93,22 @@ class Initialize_Data:
                 permission_description=security_constants.PERMISSION_DELETE_ME_DESC,
             ),
             PermissionsSchema(
+                permission_name=security_constants.PERMISSION_READ_DOCUMENTS,
+                permission_description=security_constants.PERMISSION_READ_DOCUMENTS_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_WRITE_DOCUMENTS,
+                permission_description=security_constants.PERMISSION_WRITE_DOCUMENTS_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_UPDATE_DOCUMENTS,
+                permission_description=security_constants.PERMISSION_UPDATE_DOCUMENTS_DESC,
+            ),
+            PermissionsSchema(
+                permission_name=security_constants.PERMISSION_DELETE_DOCUMENTS,
+                permission_description=security_constants.PERMISSION_DELETE_DOCUMENTS_DESC,
+            ),
+            PermissionsSchema(
                 permission_name=security_constants.PERMISSION_READ_DOC_TYPES,
                 permission_description=security_constants.PERMISSION_READ_DOC_TYPES_DESC,
             ),
@@ -200,7 +216,7 @@ class Initialize_Data:
         not_yet_added_permissions = [permission for permission in permissions
                                      if permission.permission_name not in existing_permission_names]
         if len(not_yet_added_permissions) > 0:
-            crud_tbl_permissions.bulk_insert(self.db, not_yet_added_permissions)
+            crud_tbl_permissions.bulk_create(self.db, not_yet_added_permissions)
             print(f"insert_permissions: {len(not_yet_added_permissions)} new permissions inserted.")
 
     def insert_roles(self):

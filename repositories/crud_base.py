@@ -56,10 +56,11 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         :param obj_in:
         :return:
         """
-        db_obj = [self.model(**obj_in_data) for obj_in_data in obj_in]
+        db_obj = [self.model(**obj_in_data.model_dump(mode='json')) for obj_in_data in obj_in]
         db.add_all(db_obj)
         db.commit()
-        db.refresh(db_obj)
+        for db_obj_item in db_obj:
+            db.refresh(db_obj_item)
         return db_obj
 
     def update(

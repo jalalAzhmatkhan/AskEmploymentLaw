@@ -16,4 +16,5 @@ class TblDocuments(Base):
     is_uploaded = Column(Boolean, index=True)
     uploader_id = Column(Integer, ForeignKey(TblUsers.id), nullable=False)
     the_document = Column(LargeBinary, nullable=True)
+    document_hash = Column(String, nullable=True)
     user = relationship("TblUsers", back_populates="documents")
