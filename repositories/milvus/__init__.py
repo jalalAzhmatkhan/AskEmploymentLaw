@@ -1,0 +1,1 @@
+from repositories.milvus.crud_base_milvus import crud_base_milvus

@@ -5,14 +5,11 @@ from pymilvus import (
     connections,
     Collection,
     CollectionSchema,
-    DataType,
     FieldSchema,
     RRFRanker,
     utility,
     WeightedRanker,
 )
-
-from core.configs import settings
 
 class MilvusCRUD:
     def __init__(
@@ -33,25 +30,19 @@ class MilvusCRUD:
     def create_collection(
         self,
         collection_name: str,
-        dimension: int,
-        index_params: Dict[str, Any] = None
+        index_params: List[Dict[str, Any]] = None,
+        fields: List[FieldSchema] = None
     ):
         """
         Create a collection with the specified name and dimension.
 
         :param collection_name: Name of the collection.
-        :param dimension: Dimension of the vectors.
         :param index_params: Index parameters for the collection.
+        :param fields: List of field schemas.
         """
         if utility.has_collection(collection_name):
             print(f"Collection {collection_name} already exists.")
             return
-
-        # Define field schemas
-        fields = [
-            FieldSchema(name="id", dtype=DataType.INT64, is_primary=True, auto_id=True),
-            FieldSchema(name="vector", dtype=DataType.FLOAT_VECTOR, dim=dimension),
-        ]
 
         # Create a collection schema
         schema = CollectionSchema(fields, description=f"{collection_name} schema")
@@ -61,11 +52,15 @@ class MilvusCRUD:
 
         # Create an index, if specified
         if index_params:
-            collection.create_index(field_name="vector", index_params=index_params)
+            for index_param in index_params:
+                collection.create_index(
+                    field_name=index_param.get("field_name", ""),
+                    index_params=index_param.get("index_params", {})
+                )
 
         print(f"Collection {collection_name} created successfully.")
 
-    def insert_vectors(
+    def insert_vectors_batched(
         self,
         collection_name: str,
         vectors: List[List[float]],
@@ -177,9 +172,3 @@ class MilvusCRUD:
         List all collections in Milvus.
         """
         return utility.list_collections()
-
-
-crud_base_milvus = MilvusCRUD(
-    host=settings.VECTOR_DB_HOST,
-    port=settings.VECTOR_DB_PORT
-)

@@ -1,7 +1,21 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
+
+class MilvusDocumentsSchema(BaseModel):
+    """Schema for documents domain in Milvus."""
+    uploaded_document_id: int
+    text: str
+    dense_embedding: List[float]
+    sparse_embedding: List[float]
+
+class MilvusDocumentsInDB(MilvusDocumentsSchema):
+    """Schema for documents domain in Milvus in database."""
+    id: int
+
+    class Config:
+        from_attributes = True
 
 class DocumentsSchema(BaseModel):
     """Schema for documents domain."""
