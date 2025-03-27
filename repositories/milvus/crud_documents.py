@@ -1,6 +1,12 @@
 from typing import List, Optional
 
-from pymilvus import Collection, DataType, FieldSchema
+from pymilvus import (
+    Collection,
+    DataType,
+    FieldSchema,
+    Function,
+    FunctionType
+)
 
 from core.configs import settings
 from repositories.milvus.crud_base_milvus import MilvusCRUD
@@ -26,7 +32,8 @@ class CRUDDocuments(MilvusCRUD):
             ),
             FieldSchema(
                 name="text",
-                dtype=DataType.STRING,
+                dtype=DataType.VARCHAR,
+                max_length=60535
             ),
             FieldSchema(
                 name="dense_embedding",
@@ -38,6 +45,12 @@ class CRUDDocuments(MilvusCRUD):
                 dtype=DataType.SPARSE_FLOAT_VECTOR,
             )
         ]
+        text_to_bm_25 = Function(
+            name="text_to_bm25",
+            input_field_names="text",
+            output_field_names="sparse_embedding",
+            function_type=FunctionType.BM25
+        )
         index_parameters = [
             {
                 "field_name": "dense_embedding",
@@ -58,6 +71,7 @@ class CRUDDocuments(MilvusCRUD):
             collection_name=self.collection_name,
             fields=document_fields,
             index_params=index_parameters,
+            added_functions=[text_to_bm_25],
         )
 
     def insert_vector(
