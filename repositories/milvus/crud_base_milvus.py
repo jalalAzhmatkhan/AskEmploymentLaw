@@ -6,6 +6,7 @@ from pymilvus import (
     Collection,
     CollectionSchema,
     FieldSchema,
+    Function,
     RRFRanker,
     utility,
     WeightedRanker,
@@ -22,7 +23,11 @@ class MilvusCRUD:
         """
         Initialize a connection to the Milvus server.
         """
-        connections.connect("default", host=host, port=port, username=username, password=password)
+        connections.connect(
+            "default",
+            host=host,
+            port=port,
+            token=f"{username}:{password}" if username and password else None)
         print(
             f"Connected to Milvus at {host}:{port}"
         )
@@ -31,11 +36,13 @@ class MilvusCRUD:
         self,
         collection_name: str,
         index_params: List[Dict[str, Any]] = None,
-        fields: List[FieldSchema] = None
+        fields: List[FieldSchema] = None,
+        added_functions: Optional[List[Function]] = None
     ):
         """
         Create a collection with the specified name and dimension.
 
+        :param added_functions:
         :param collection_name: Name of the collection.
         :param index_params: Index parameters for the collection.
         :param fields: List of field schemas.
@@ -46,6 +53,10 @@ class MilvusCRUD:
 
         # Create a collection schema
         schema = CollectionSchema(fields, description=f"{collection_name} schema")
+
+        if added_functions:
+            for function in added_functions:
+                schema.add_function(function)
 
         # Create a collection
         collection = Collection(name=collection_name, schema=schema)

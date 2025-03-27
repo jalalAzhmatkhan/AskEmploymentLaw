@@ -33,6 +33,44 @@ class CRUDDocuments(CRUDBase[TblDocuments, DocumentsSchema, DocumentsUpdateSchem
         db.refresh(db_obj)
         return db_obj
 
+    def get_all_limited(self, db: Session, limit: int, page: int)->List[TblDocuments]:
+        """
+        Get all documents with limit and pagination
+        :param db:
+        :param limit:
+        :param page:
+        :return:
+        """
+        return db.query(self.model).limit(limit).offset((page - 1) * limit).all()  # type: ignore
+
+    def get_all_by_uploader_id(self, db: Session, uploader_id: int)->List[TblDocuments]:
+        """
+        Get all documents by uploader_id
+        :param db:
+        :param uploader_id:
+        :return:
+        """
+        return db.query(self.model).filter(self.model.uploader_id == uploader_id).all()  # type: ignore
+
+    def get_all_limited_by_uploader_id(
+        self,
+        db: Session,
+        uploader_id: int,
+        limit: int,
+        page: int
+    )->List[TblDocuments]:
+        """
+        Get all documents by uploader_id with limit and pagination
+        :param db:
+        :param uploader_id:
+        :param limit:
+        :param page:
+        :return:
+        """
+        return db.query(self.model).filter(  # type: ignore
+            self.model.uploader_id == uploader_id
+        ).limit(limit).offset((page - 1) * limit).all()  # type: ignore
+
     def get_by_like_document_name(self, db: Session, document_name: str)->List[TblDocuments]:
         """
         Get documents by like document_name

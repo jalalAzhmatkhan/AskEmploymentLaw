@@ -1,5 +1,5 @@
 import json
-from typing import Annotated
+from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Security, UploadFile
 
@@ -11,10 +11,68 @@ from constants import general as general_constants
 from core.db_connection import database
 from core.utilities import hash_a_file
 from models import TblUsers
-from schemas import DocumentUploadRequest, DocumentUploadResponse
+from schemas import (
+    AllDocumentsResponse,
+    DocumentsInDB,
+    DocumentUploadRequest,
+    DocumentUploadResponse,
+)
 from services import document_management_service, get_current_active_user
 
 documents_uploader_controller = APIRouter()
+
+@documents_uploader_controller.get("/documents", response_model=List[AllDocumentsResponse])
+def get_all_documents(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    limit: int = 10,
+    page: int = 1,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            get_current_active_user,
+            scopes=[security_constants.PERMISSION_READ_DOCUMENTS]
+        )
+    ],
+) -> List[AllDocumentsResponse]:
+    """
+    Get all documents
+    :param db:
+    :param limit:
+    :param page:
+    :param current_user:
+    :return:
+    """
+    return document_management_service.get_all_documents(db=db, limit=limit, page=page)
+
+@documents_uploader_controller.get("/documents/me", response_model=List[AllDocumentsResponse])
+def get_my_uploaded_documents(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    limit: int = 10,
+    page: int = 1,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            get_current_active_user,
+            scopes=[security_constants.PERMISSION_READ_DOCUMENTS]
+        )
+    ],
+) -> List[AllDocumentsResponse]:
+    """
+    Get all documents uploaded by the current user
+    :param db:
+    :param limit:
+    :param page:
+    :param current_user:
+    :return:
+    """
+    return document_management_service.get_uploaded_documents_by_uploader(
+        db=db,
+        limit=limit,
+        page=page,
+        uploader_id=current_user.id
+    )
 
 @documents_uploader_controller.post("/upload", response_model=DocumentUploadResponse)
 async def upload_a_document(
