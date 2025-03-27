@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -79,5 +79,28 @@ class CRUDDocuments(CRUDBase[TblDocuments, DocumentsSchema, DocumentsUpdateSchem
         :return:
         """
         return db.query(self.model).filter(self.model.document_name.like(f'%{document_name}%')).all()  # type: ignore
+
+    def delete_by_id(self, db: Session, document_id: int)->Optional[TblDocuments]:
+        """
+        Delete a document by document_id
+        :param db:
+        :param document_id:
+        :return:
+        """
+        response = db.query(self.model).filter(self.model.id == document_id).first()
+        if response:
+            db.delete(response)
+            db.commit()
+            return response  # type: ignore
+
+    def bulk_delete(self, db: Session, document_ids: List[int])->List[TblDocuments]:
+        """
+        Bulk delete documents by document_ids
+        :param db:
+        :param document_ids:
+        """
+        response = db.query(self.model).filter(self.model.id.in_(document_ids)).all()
+        db.query(self.model).filter(self.model.id.in_(document_ids)).delete(synchronize_session=False)
+        return response  # type: ignore
 
 crud_tbl_documents = CRUDDocuments(TblDocuments)

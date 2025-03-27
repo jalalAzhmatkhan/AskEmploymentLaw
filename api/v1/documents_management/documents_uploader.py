@@ -13,7 +13,7 @@ from core.utilities import hash_a_file
 from models import TblUsers
 from schemas import (
     AllDocumentsResponse,
-    DocumentsInDB,
+    DocumentDeleteRequest,
     DocumentUploadRequest,
     DocumentUploadResponse,
 )
@@ -138,4 +138,51 @@ async def upload_a_document(
         document_size=document.file.__sizeof__(),
         document_hash=document_hash,
         document_id=uploaded_document.id,
+    )
+
+@documents_uploader_controller.delete("/documents/{document_id}", response_model=AllDocumentsResponse)
+def delete_document(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    document_id: int,
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            get_current_active_user,
+            scopes=[security_constants.PERMISSION_DELETE_DOCUMENTS]
+        )
+    ],
+):
+    """
+    Delete a document
+    :param db:
+    :param document_id:
+    :param current_user:
+    :return:
+    """
+    return document_management_service.delete_document(db=db, document_id=document_id)
+
+@documents_uploader_controller.delete("/documents/bulk", response_model=List[AllDocumentsResponse])
+def bulk_delete_document(
+    db: Session = Depends(database.get_postgresql_db),
+    *,
+    data: List[DocumentDeleteRequest],
+    current_user: Annotated[
+        TblUsers,
+        Security(
+            get_current_active_user,
+            scopes=[security_constants.PERMISSION_DELETE_DOCUMENTS]
+        )
+    ],
+):
+    """
+    Bulk delete documents
+    :param db:
+    :param document_ids:
+    :param current_user:
+    :return:
+    """
+    return document_management_service.bulk_delete_document(
+        db=db,
+        document_ids=[item_data.document_ids for item_data in data]
     )

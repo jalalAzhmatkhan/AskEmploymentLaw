@@ -71,6 +71,18 @@ class MilvusCRUD:
 
         print(f"Collection {collection_name} created successfully.")
 
+    def delete_collection(self, collection_name: str):
+        """
+        Delete a collection from Milvus.
+
+        :param collection_name: Name of the collection.
+        """
+        if not utility.has_collection(collection_name):
+            print(f"Collection {collection_name} does not exist.")
+            return
+        utility.drop_collection(collection_name)
+        print(f"Collection {collection_name} dropped.")
+
     def insert_vectors_batched(
         self,
         collection_name: str,
