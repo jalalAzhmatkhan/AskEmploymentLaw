@@ -16,9 +16,19 @@ class CRUDDocuments(MilvusCRUD):
     """
     CRUD for Documents collection on Milvus
     """
-    def __init__(self, host: str, port: str, username: str, password: str):
+    def __init__(
+        self,
+        host: str,
+        port: str,
+        username: str,
+        password: str,
+        delete_insert_collection: bool = False
+    ):
         super().__init__(host, port, username, password)
         self.collection_name = "documents"
+        analyzer_params = {
+            "tokenizer": "standard",
+        }
         document_fields = [
             FieldSchema(
                 name="id",
@@ -33,7 +43,9 @@ class CRUDDocuments(MilvusCRUD):
             FieldSchema(
                 name="text",
                 dtype=DataType.VARCHAR,
-                max_length=60535
+                max_length=60535,
+                enable_analyzer=True,
+                analyzer_params=analyzer_params,
             ),
             FieldSchema(
                 name="dense_embedding",
@@ -67,6 +79,8 @@ class CRUDDocuments(MilvusCRUD):
                 }
             }
         ]
+        if delete_insert_collection:
+            self.delete_collection(self.collection_name)
         self.create_collection(
             collection_name=self.collection_name,
             fields=document_fields,
@@ -112,5 +126,6 @@ crud_documents = CRUDDocuments(
     host=settings.VECTOR_DB_HOST,
     port=settings.VECTOR_DB_PORT,
     username=settings.VECTOR_DB_USERNAME,
-    password=settings.VECTOR_DB_PASSWORD
+    password=settings.VECTOR_DB_PASSWORD,
+    delete_insert_collection=False,
 )
