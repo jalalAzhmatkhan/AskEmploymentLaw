@@ -122,7 +122,7 @@ class CRUDDocuments(MilvusCRUD):
         return results.primary_keys
 
 
-crud_documents = CRUDDocuments(
+crud_documents_milvus = CRUDDocuments(
     host=settings.VECTOR_DB_HOST,
     port=settings.VECTOR_DB_PORT,
     username=settings.VECTOR_DB_USERNAME,

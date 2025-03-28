@@ -8,7 +8,7 @@ class MilvusDocumentsSchema(BaseModel):
     uploaded_document_id: int
     text: str
     dense_embedding: List[float]
-    sparse_embedding: List[float]
+    sparse_embedding: Optional[List[float]] = None
 
 class MilvusDocumentsInDB(MilvusDocumentsSchema):
     """Schema for documents domain in Milvus in database."""
