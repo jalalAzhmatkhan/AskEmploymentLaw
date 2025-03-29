@@ -9,14 +9,13 @@ import torch
 from transformers import BertModel, BertTokenizer
 
 from constants.services import document_management as document_management_constants
-from core.configs import settings
 from models import TblDocuments
-from repositories import crud_tbl_documents, crud_documents_milvus
+from repositories import crud_tbl_documents
 from schemas import (
     AllDocumentsResponse,
     DocumentsSchema,
-    MilvusDocumentsSchema,
 )
+from services.rag import Chunking
 
 class DocumentManagementService:
     """
@@ -114,6 +113,8 @@ class DocumentManagementService:
         uploaded_document = crud_tbl_documents.create(db, inserted_document)
 
         extracted_text = self.pdf_extractor(the_document)
+        chunker = Chunking(extracted_text)
+        chunked_text = chunker.sliding_windows(5)
         return uploaded_document
 
     def delete_document(self, db: Session, document_id: int)->Optional[AllDocumentsResponse]:
