@@ -1,1 +1,1 @@
-from repositories.milvus.crud_documents import crud_documents
+from repositories.milvus.crud_documents import crud_documents_milvus

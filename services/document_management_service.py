@@ -1,13 +1,21 @@
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Literal, Optional
 
+from openai import OpenAI
+from pdf2image import convert_from_bytes
+import pytesseract
 from sqlalchemy.orm import Session
+import torch
+from transformers import BertModel, BertTokenizer
 
+from constants.services import document_management as document_management_constants
+from core.configs import settings
 from models import TblDocuments
-from repositories import crud_tbl_documents
+from repositories import crud_tbl_documents, crud_documents_milvus
 from schemas import (
     AllDocumentsResponse,
     DocumentsSchema,
+    MilvusDocumentsSchema,
 )
 
 class DocumentManagementService:
@@ -103,7 +111,10 @@ class DocumentManagementService:
             uploaded_at=datetime.now(),
             the_document=the_document
         )
-        return crud_tbl_documents.create(db, inserted_document)
+        uploaded_document = crud_tbl_documents.create(db, inserted_document)
+
+        extracted_text = self.pdf_extractor(the_document)
+        return uploaded_document
 
     def delete_document(self, db: Session, document_id: int)->Optional[AllDocumentsResponse]:
         """
@@ -144,5 +155,107 @@ class DocumentManagementService:
             uploaded_at=resp.uploaded_at,
         ) for resp in response_in_db]
         return responses
+
+    def pdf_extractor(self, the_document: bytes)->str:
+        """
+        Function to extract text from a PDF document
+        :param the_document:
+        :return:
+        """
+        try:
+            # Convert PDF to a list of PIL images for each page
+            # Because not all PDFs are text-based, we need to convert them to images
+            images = convert_from_bytes(the_document)
+
+            # Use pytesseract to extract text from each image
+            extracted_text = ""
+            for image in images:
+                text = pytesseract.image_to_string(image)
+                extracted_text += text + "\n"  # Append the text with a new line
+
+            return extracted_text.strip()  # Return the full extracted text
+        except Exception as e:
+            # Handle exceptions (e.g., logging, custom exceptions, etc.)
+            print(f"Error during PDF processing: {e}")
+            return ""
+
+    def bert_encode(
+        self,
+        text: str,
+        bert_model: Literal["bert-base-uncased", "bert-large-uncased"] = "bert-base-uncased"
+    )->List[float]:
+        """
+        Function to encode text using BERT
+        :param text:
+        :param bert_model:
+        :return:
+        """
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+        # Load the BERT model and tokenizer
+        tokenizer = BertTokenizer.from_pretrained(bert_model)
+        model = BertModel.from_pretrained(bert_model)
+        model = model.to(device)
+
+        # Tokenize the text
+        inputs = tokenizer(text, return_tensors="pt").to(device)
+
+        # Disable gradient calculation
+        with torch.no_grad():
+            # Get the dense vector from the BERT model
+            outputs = model(**inputs)
+            return outputs.last_hidden_state.cpu().tolist()
+
+    def openai_embedding(self, text: str, model: str, token: str)->List[float]:
+        """
+        Function to get an OpenAI embedding from text
+        :param token:
+        :param model:
+        :param text:
+        :return:
+        """
+        # Initialize the OpenAI API
+        openai = OpenAI(
+            api_key=token
+        )
+
+        # Get the OpenAI embedding
+        response_openai = openai.embeddings.create(
+            input=text,
+            model=model,
+            dimensions=document_management_constants.BERT_LARGE_EMBEDDING_DIM,
+        )
+        return response_openai.data[0].embedding
+
+    def get_dense_vector_from_text(
+        self,
+        text: str,
+        embedding_model: Literal[
+            "text-embedding-3-small",
+            "text-embedding-3-large",
+            "text-embedding-ada-002",
+            "bert-base-uncased",
+            "bert-large-uncased",
+        ] = "text-embedding-3-small",
+        api_key: Optional[str] = None,
+    )->List[float]:
+        """
+        Function to get a dense vector from text
+        :param api_key:
+        :param embedding_model:
+        :param text:
+        :return:
+        """
+        # Implement the logic to convert text to a dense vector
+        response_vectors = []
+
+        if "bert" in embedding_model:
+            response_vectors = self.bert_encode(text, embedding_model)  # type: ignore
+        elif "text-embedding" in embedding_model:
+            # Implement the logic to convert text to a dense vector
+            response_vectors = self.openai_embedding(text, embedding_model, api_key)  # type: ignore
+
+        return response_vectors
+
 
 document_management_service = DocumentManagementService()

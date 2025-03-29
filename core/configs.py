@@ -93,6 +93,9 @@ class Settings(BaseSettings):
     VECTOR_DB_CONNECTION_MAX_TRIES: int
     VECTOR_DB_CONNECTION_WAIT_SEC: int
 
+    # Open AI
+    OPENAI_API_KEY: str
+
     class Config:
         """ Additional config """
         case_sensitive = True
