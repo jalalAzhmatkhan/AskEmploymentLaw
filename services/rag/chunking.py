@@ -1,7 +1,12 @@
-from typing import List
+import json
+from typing import List, Literal, Optional
 
 from nltk.tokenize import sent_tokenize
 
+from constants.core import llm_adapters as llm_adapters_constants
+from core.llm_adapters import LLMAdapters
+from core.logger import logger
+from schemas import LLMAdapterMessageRequest, LLMAdapterUserMessageRequest
 from services.rag.init_nltk_data import init_nltk_data
 
 class Chunking:
@@ -58,12 +63,6 @@ class Chunking:
         Chunk the text into sliding windows.
         :return:
         """
-        chunks = []
         sentences = sent_tokenize(self.full_text)
-        current_chunk = []
-        for sentence in sentences:
-            current_chunk.append(sentence.strip())
-            if len(current_chunk) > n_slide:
-                chunks.append(' '.join(current_chunk))
-                current_chunk = current_chunk[-n_slide:]
+        chunks = [". ".join(sentences[i:i + n_slide]) + "." for i in range(len(sentences) - n_slide + 1)]
         return chunks

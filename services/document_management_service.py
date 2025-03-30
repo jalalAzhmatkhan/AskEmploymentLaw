@@ -113,8 +113,10 @@ class DocumentManagementService:
         uploaded_document = crud_tbl_documents.create(db, inserted_document)
 
         extracted_text = self.pdf_extractor(the_document)
+        # Optionally, you can use Chunking to split the text into smaller parts
         chunker = Chunking(extracted_text)
-        chunked_text = chunker.sliding_windows(5)
+        text_chunks = chunker.sliding_windows(n_slide=5)  # Example: sliding window with 5 sentences
+
         return uploaded_document
 
     def delete_document(self, db: Session, document_id: int)->Optional[AllDocumentsResponse]:
