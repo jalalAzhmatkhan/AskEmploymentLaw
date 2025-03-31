@@ -6,17 +6,18 @@ from pdf2image import convert_from_bytes
 import pytesseract
 from sqlalchemy.orm import Session
 import torch
+from tqdm import tqdm
 from transformers import BertModel, BertTokenizer
 
 from constants.services import document_management as document_management_constants
-from core.configs import settings
+from core.logger import logger
 from models import TblDocuments
-from repositories import crud_tbl_documents, crud_documents_milvus
+from repositories import crud_tbl_documents
 from schemas import (
     AllDocumentsResponse,
     DocumentsSchema,
-    MilvusDocumentsSchema,
 )
+from services.rag import Chunking
 
 class DocumentManagementService:
     """
@@ -114,6 +115,15 @@ class DocumentManagementService:
         uploaded_document = crud_tbl_documents.create(db, inserted_document)
 
         extracted_text = self.pdf_extractor(the_document)
+        # Optionally, you can use Chunking to split the text into smaller parts
+        chunker = Chunking(extracted_text)
+        text_chunks = chunker.recursive_chunking(
+            chunk_size=1000,
+            chunk_overlap=200,
+        )
+        logger.info(f"Number of text chunks: {len(text_chunks)}")
+        logger.info(f"Text chunks: {text_chunks}")
+
         return uploaded_document
 
     def delete_document(self, db: Session, document_id: int)->Optional[AllDocumentsResponse]:
@@ -169,9 +179,13 @@ class DocumentManagementService:
 
             # Use pytesseract to extract text from each image
             extracted_text = ""
-            for image in images:
+            page_number = 1
+            image_processor_pgb = tqdm(images)
+            for image in image_processor_pgb:
                 text = pytesseract.image_to_string(image)
                 extracted_text += text + "\n"  # Append the text with a new line
+                image_processor_pgb.set_description(f"Processing page {page_number}")
+                page_number += 1
 
             return extracted_text.strip()  # Return the full extracted text
         except Exception as e:

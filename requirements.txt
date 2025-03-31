@@ -101,6 +101,7 @@ kiwisolver==1.4.8
 langchain==0.3.14
 langchain-community==0.3.14
 langchain-core==0.3.30
+langchain-experimental==0.3.4
 langchain-milvus==0.1.8
 langchain-ollama==0.2.2
 langchain-openai==0.3.0

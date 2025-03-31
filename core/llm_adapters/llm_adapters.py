@@ -1,6 +1,5 @@
-import asyncio
 import json
-from typing import Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 from uuid import uuid4
 
 from constants.core import (
@@ -152,7 +151,7 @@ class LLMAdapters:
     async def inference(
         self,
         messages: List[LLMAdapterMessageRequest]
-    )->Union[Optional[List[Dict[str, str]]], Optional[Dict[str, str]]]:
+    )->Union[Optional[List[Dict[str, str]]], Optional[Dict[str, Any]]]:
         """
         Function to do LLM inference
         :param messages:

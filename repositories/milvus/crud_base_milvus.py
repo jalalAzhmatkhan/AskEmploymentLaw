@@ -59,7 +59,7 @@ class MilvusCRUD:
                 schema.add_function(function)
 
         # Create a collection
-        collection = Collection(name=collection_name, schema=schema)
+        collection = Collection(name=collection_name, schema=schema, consistency_level="Strong")  # type: ignore
 
         # Create an index, if specified
         if index_params:
