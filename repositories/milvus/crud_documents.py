@@ -127,5 +127,5 @@ crud_documents_milvus = CRUDDocuments(
     port=settings.VECTOR_DB_PORT,
     username=settings.VECTOR_DB_USERNAME,
     password=settings.VECTOR_DB_PASSWORD,
-    delete_insert_collection=False,
+    delete_insert_collection=True,
 )

@@ -6,7 +6,6 @@ def init_nltk_data():
     :return:
     """
     try:
-        print("Checking NLTK data...")
         nltk.data.find('tokenizers/punkt')
     except LookupError:
         nltk.download('punkt')
