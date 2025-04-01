@@ -5,3 +5,4 @@ from services.auth_service import (
     get_current_active_superuser,
 )
 from services.document_management_service import document_management_service
+from services.rag import *

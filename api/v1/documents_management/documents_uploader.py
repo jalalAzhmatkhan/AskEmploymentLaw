@@ -123,7 +123,7 @@ async def upload_a_document(
     parsed_supporting_data = json.loads(supporting_data)
     supporting_data_model = DocumentUploadRequest(**parsed_supporting_data)
     document_contents = await document.read()
-    uploaded_document = document_management_service.upload_source_document(
+    uploaded_document, job_id = document_management_service.upload_source_document(
         db=db,
         document_name=supporting_data_model.document_name,
         document_type=supporting_data_model.document_type,
@@ -138,6 +138,7 @@ async def upload_a_document(
         document_size=document.file.__sizeof__(),
         document_hash=document_hash,
         document_id=uploaded_document.id,
+        document_extraction_job_id=job_id,
     )
 
 @documents_uploader_controller.delete("/documents/{document_id}", response_model=AllDocumentsResponse)

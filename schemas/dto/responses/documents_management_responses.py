@@ -9,6 +9,7 @@ class DocumentUploadResponse(BaseModel):
     document_size: int
     document_hash: str
     document_id: int
+    document_extraction_job_id: str
 
 class AllDocumentsResponse(BaseModel):
     """Schema for all documents response"""

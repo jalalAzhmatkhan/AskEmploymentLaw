@@ -1,3 +1,4 @@
+import base64
 from datetime import datetime, date
 import hashlib
 import locale
@@ -11,7 +12,29 @@ from constants.general import (
     INDONESIAN_LINUX_LOCALE,
     OS_WINDOWS,
 )
+from core.logger import logger
 
+def bytes_to_base64(
+    input_file: bytes
+)->Optional[str]:
+    """Function to convert bytes to base64"""
+    response = None
+    try:
+        response = base64.b64encode(input_file).decode('utf-8')
+    except Exception as e:
+        logger.error(f"bytes_to_base64: {e}")
+    return response
+
+def base64_to_bytes(
+    input_base64: str
+)->Optional[bytes]:
+    """Function to convert base64 to bytes"""
+    response = None
+    try:
+        response = base64.b64decode(input_base64)
+    except Exception as e:
+        logger.error(f"base64_to_bytes: {e}")
+    return response
 
 def camel_to_snake(camel_case_string: str)->str:
     """

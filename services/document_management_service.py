@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List, Literal, Optional
+from typing import List, Literal, Optional, Tuple
 
 from openai import OpenAI
 from pdf2image import convert_from_bytes
@@ -10,14 +10,14 @@ from tqdm import tqdm
 from transformers import BertModel, BertTokenizer
 
 from constants.services import document_management as document_management_constants
-from core.logger import logger
+from core.utilities import bytes_to_base64
 from models import TblDocuments
 from repositories import crud_tbl_documents
 from schemas import (
     AllDocumentsResponse,
     DocumentsSchema,
 )
-from services.rag import Chunking
+from services.celery.document_extraction_service import pdf_document_extraction
 
 class DocumentManagementService:
     """
@@ -89,7 +89,7 @@ class DocumentManagementService:
         document_hash: str,
         uploader_id: int,
         the_document: bytes,
-    )->TblDocuments:
+    )->Tuple[TblDocuments, str]:
         """
         Function to upload a source document
         :param the_document:
@@ -114,17 +114,10 @@ class DocumentManagementService:
         )
         uploaded_document = crud_tbl_documents.create(db, inserted_document)
 
-        extracted_text = self.pdf_extractor(the_document)
-        # Optionally, you can use Chunking to split the text into smaller parts
-        chunker = Chunking(extracted_text)
-        text_chunks = chunker.recursive_chunking(
-            chunk_size=1000,
-            chunk_overlap=200,
-        )
-        logger.info(f"Number of text chunks: {len(text_chunks)}")
-        logger.info(f"Text chunks: {text_chunks}")
+        base64_encoded_document = bytes_to_base64(the_document)
+        document_extraction_job = pdf_document_extraction.delay(base64_encoded_document)
 
-        return uploaded_document
+        return uploaded_document, document_extraction_job.id
 
     def delete_document(self, db: Session, document_id: int)->Optional[AllDocumentsResponse]:
         """
